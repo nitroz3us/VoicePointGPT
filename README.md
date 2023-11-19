@@ -46,7 +46,7 @@ To get started with GPThreatIntel-Summarizer, follow these steps:
   SUPABASE_BUCKET_NAME =
   ```
 
-## Screenshot
+## Demo
 
 {soon}
  
