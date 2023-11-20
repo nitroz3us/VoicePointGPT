@@ -254,6 +254,8 @@ async function getResultFromOpenAI(imageUrls) {
 }
 
 async function generateSpeech() {
+  loadingAudioSpinner.classList.remove("hidden");
+  narrateBtn.classList.add("hidden");
   
   const maxChunkSize = 4096; // Maximum token limit
   // Split the input text into chunks
