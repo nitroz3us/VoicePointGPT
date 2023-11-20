@@ -51,11 +51,20 @@ async def generate(request: Request, data: str = Form(None), file_upload: Upload
 
         convert_pdf_to_images(data, pdf_filename) # Convert PDF to images, and upload to supabase storage
         result = retrieve_urls(pdf_filename) # Retrieve signed urls for image files in supabase storage
-        # result = analyze_images(pdf_filename, apiKey) # Analyze the images and get the text results from the API
-        # delete_folder_from_supabase_storage(pdf_filename) # Schedule the deletion of the folder
-        # generate_text_to_speech(result, apiKey, modelChoice, voiceChoice) # Generate the audio file from the API
 
         return {"result": result} # return result
+    
+# New endpoint to delete files in Supabase storage
+@app.post("/delete-files", response_class=JSONResponse)
+async def delete_files(request: Request, pdf_filename: str = Form(...)):
+    list_of_file_paths = pdf_filename.split(',')
+    print("\n\nlist_of_file_paths: ", list_of_file_paths)
+    for file_path in list_of_file_paths:
+        try:
+            supabase.storage.from_(supabase_bucket_name).remove(file_path)
+            print(f"File '{file_path}' deleted successfully.")
+        except Exception as e:
+            print(f"Error deleting file '{file_path}': {e}")
 
 # Convert PDF to image, enumerate pages
 def convert_pdf_to_images(data: bytes, pdf_filename: str):
@@ -178,8 +187,6 @@ def generate_text_to_speech(text_result, user_apiKey, modelChoice, voiceChoice):
         file.write(audio)
 
     print("Audio file generated! \n")
-# Periodically delete the folder and all of its contents from supabase storage
-def delete_folder_from_supabase_storage(pdf_filename):
     """
     Delete folder and all of its contents from supabase storage after a delay
     """

@@ -18,7 +18,6 @@ var loadingAudioSpinner = document.getElementById("loadingAudioSpinner");
 const apiUrl = "https://api.openai.com/v1/audio/speech";
 const visionAPIUrl = "https://api.openai.com/v1/chat/completions";
 
-
 function dataFileDnD() {
   return {
       files: [],
@@ -88,7 +87,6 @@ function dataFileDnD() {
   };
 }
 
-
 function toggleModal() {
   var modal = document.getElementById("modal");
   var backdrop = document.getElementById("modal-backdrop");
@@ -135,6 +133,8 @@ async function generateScript() {
     const responseData = await response.json(); // Assuming your response is JSON
     imageUrls = responseData.result; //get imageUrls from backend
     finalResult = await getResultFromOpenAI(imageUrls); // use imageurls to pipe to openai vision api
+
+
     // if finalResult reponse is not ok, then show error
     if(!finalResult){
       loadingSpinner.classList.add("hidden");
@@ -145,34 +145,45 @@ async function generateScript() {
       scriptText.innerText = finalResult; // print result
       console.log("finalResult from generateScript: ", finalResult);
     }
-
-    // // Check if the response is OK (status code 200)
-    // if (response.ok) {
-    //   const responseData = await response.json(); // Assuming your response is JSON
-    //   imageUrls = responseData.result; //get imageUrls from backend
-    //   console.log("Getting results from OpenAI...")
-    //   finalResult = await getResultFromOpenAI(imageUrls); // use imageurls to pipe to openai vision api
-    //   scriptText.innerText = finalResult; // print result
-    //   console.log("finalResult from generateScript: ", finalResult);
-
-    // } else {
-    //   // Handle error cases
-    //   // const errorData = await response.json();
-    //   // console.error("Error:", errorData.error.message);
-    //   // toast('Error', errorData.error.message, toastStyles.error, 2000);
-    // }
   } catch (error) {
     console.error("Error:", error.message);
     toast('Error', error.message, toastStyles.error, 7000);
-  } 
-  // finally {
-  //   // Enable the button and hide loading spinner
-  //   // call funct to delete images from supabase
-  //   loadingSpinner.classList.add("hidden");
-  //   submitBtn.disabled = false;
-  //   submitBtn.classList.remove("hidden");
-  //   narrateBtn.classList.remove("hidden");
-  // }
+  }finally {
+    // Enable the button and hide loading spinner
+    loadingSpinner.classList.add("hidden");
+    submitBtn.disabled = false;
+    submitBtn.classList.remove("hidden");
+    narrateBtn.classList.remove("hidden");
+
+    var list_of_file_paths = [];
+
+    imageUrls.forEach((imageUrl, index) => {
+      const urlObject = new URL(imageUrl);
+      const parts = urlObject.pathname.split("/");
+      const pdfFilename = parts[parts.length - 2]; // FancyBear.pdf
+      const pageFilename = parts[parts.length - 1]; // page_1.png
+      const filepath = `${pdfFilename}/${pageFilename}`;
+      list_of_file_paths.push(filepath);
+    });
+
+    // call backend to delete files
+    const deleteResponse = await fetch("/delete-files", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+      body: new URLSearchParams({
+        pdf_filename: list_of_file_paths,  // replace with the actual pdf_filename
+      }),
+    });
+
+    // Check if the response is OK
+    if (deleteResponse.ok) {
+      console.log("Files deleted successfully");
+    } else {
+      console.error("Error deleting files:", deleteResponse.statusText);
+    }
+  }
 }
 
 async function getResultFromOpenAI(imageUrls) {
@@ -299,14 +310,12 @@ async function generateSpeech() {
   toast('Success', 'Audio generated', toastStyles.success, 2000);
 }
 
-
-
 async function saveButton(){
   var apiKey = document.getElementById("apiKeyInput").value;
   // disable all input by default unless api key is valid
-  // const isValidApiKey = await validateApiKey(apiKey);  
-  const isValidApiKeyGPT4 = await validateApiKeyGPT4(apiKey);
-  if (!isValidApiKeyGPT4){
+  const isValidApiKey = await validateApiKey(apiKey);  
+  if (!isValidApiKeyFormat(apiKey) || !isValidApiKey) {
+    toast('Error', 'Invalid API key format', toastStyles.error, 2000);
     loadingSpinnerSave.classList.add("hidden");
     saveBtn.classList.remove("hidden");
     return;
@@ -343,37 +352,30 @@ window.addEventListener("keydown", function (event) {
   }
 });
 
-// validate if api keys has gpt4 access
-async function validateApiKeyGPT4(apiKey) {
+function isValidApiKeyFormat(apiKey) {
+  // Implement the validation logic for the API key format
+  // Return true if the API key is valid, false otherwise
+  // Example validation logic:
+  return /^sk-[a-zA-Z0-9]{32,}$/.test(apiKey);
+}
+
+async function validateApiKey(apiKey) {
+  const headers = {
+    Authorization: `Bearer ${apiKey}`,
+  };
+
   loadingSpinnerSave.classList.remove("hidden");
   saveBtn.classList.add("hidden");
-  try{
-    const response = await fetch(visionAPIUrl, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${apiKey}`,
-        // Add any other headers if needed
-      },
-      body: JSON.stringify({
-        model: "gpt-4-vision-preview",
-        messages: "test message",
-        max_tokens: 4096,
-      }),
-    });
-  
-    // Handle the response as needed
-    if (response.ok) {
+
+  try {
+    const response = await fetch("https://api.openai.com/v1/engines", { headers });
+    if (response.ok){
       toast('Success', 'API key is valid', toastStyles.success, 2000);
       loadingSpinnerSave.classList.add("hidden");
       saveBtn.classList.remove("hidden");
-    }else{
-      const errorData = await response.json();
-      console.error("Error:", errorData.error.message);
-      toast('Error:', errorData.error.message, toastStyles.error, 7000);      
+      return response.ok;
     }
-  }catch(error){
-    console.log("error: ", error)
-    toast('Error:', error.message, toastStyles.error, 7000);
+  } catch (error) {
+    return false;
   }
-}
+} 
