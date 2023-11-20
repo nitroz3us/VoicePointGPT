@@ -11,5 +11,7 @@
         "src": "/(.*)",
         "dest": "app.py"
       }
-    ]
+    ],
+    "regions": ["sin1"]
+
 }
