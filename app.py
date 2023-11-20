@@ -58,7 +58,6 @@ async def generate(request: Request, data: str = Form(None), file_upload: Upload
 @app.post("/delete-files", response_class=JSONResponse)
 async def delete_files(request: Request, pdf_filename: str = Form(...)):
     list_of_file_paths = pdf_filename.split(',')
-    print("\n\nlist_of_file_paths: ", list_of_file_paths)
     for file_path in list_of_file_paths:
         try:
             supabase.storage.from_(supabase_bucket_name).remove(file_path)

@@ -146,42 +146,50 @@ async function generateScript() {
       console.log("finalResult from generateScript: ", finalResult);
     }
   } catch (error) {
-    console.error("Error:", error.message);
-    toast('Error', error.message, toastStyles.error, 7000);
+    console.error("Error: (this error is when the user did not upload pdf)", error.message);
+    toast('Error', 'No PDF found', toastStyles.error, 7000);
+
+    // hide narrateBtn
+    narrateBtn.classList.add("hidden");
   }finally {
-    // Enable the button and hide loading spinner
-    loadingSpinner.classList.add("hidden");
-    submitBtn.disabled = false;
-    submitBtn.classList.remove("hidden");
-    narrateBtn.classList.remove("hidden");
+
 
     var list_of_file_paths = [];
+    // check if imageurls is not empty
+    if(imageUrls.length > 0){
+      // Enable the button and hide loading spinner
+      loadingSpinner.classList.add("hidden");
+      submitBtn.disabled = false;
+      submitBtn.classList.remove("hidden");
+      narrateBtn.classList.remove("hidden");
+      imageUrls.forEach((imageUrl, index) => {
+        const urlObject = new URL(imageUrl);
+        const parts = urlObject.pathname.split("/");
+        const pdfFilename = parts[parts.length - 2]; // FancyBear.pdf
+        const pageFilename = parts[parts.length - 1]; // page_1.png
+        const filepath = `${pdfFilename}/${pageFilename}`;
+        list_of_file_paths.push(filepath);
+      });
+      // call backend to delete files
+      const deleteResponse = await fetch("/delete-files", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
+        body: new URLSearchParams({
+          pdf_filename: list_of_file_paths,  // replace with the actual pdf_filename
+        }),
+      });
 
-    imageUrls.forEach((imageUrl, index) => {
-      const urlObject = new URL(imageUrl);
-      const parts = urlObject.pathname.split("/");
-      const pdfFilename = parts[parts.length - 2]; // FancyBear.pdf
-      const pageFilename = parts[parts.length - 1]; // page_1.png
-      const filepath = `${pdfFilename}/${pageFilename}`;
-      list_of_file_paths.push(filepath);
-    });
-
-    // call backend to delete files
-    const deleteResponse = await fetch("/delete-files", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/x-www-form-urlencoded",
-      },
-      body: new URLSearchParams({
-        pdf_filename: list_of_file_paths,  // replace with the actual pdf_filename
-      }),
-    });
-
-    // Check if the response is OK
-    if (deleteResponse.ok) {
-      console.log("Files deleted successfully");
-    } else {
-      console.error("Error deleting files:", deleteResponse.statusText);
+      // Check if the response is OK
+      if (deleteResponse.ok) {
+        console.log("Files deleted successfully");
+      } else {
+        console.error("Error deleting files:", deleteResponse.statusText);
+      }
+    }else{
+      narrateBtn.classList.add("hidden");
+      toast('Error', 'No PDF found', toastStyles.error, 7000);
     }
   }
 }
