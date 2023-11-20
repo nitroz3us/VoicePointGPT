@@ -16,6 +16,7 @@ var audioDiv = document.getElementById("audioDiv");
 var loadingAudioSpinner = document.getElementById("loadingAudioSpinner");
 
 const apiUrl = "https://api.openai.com/v1/audio/speech";
+const visionAPIUrl = "https://api.openai.com/v1/chat/completions";
 
 
 function dataFileDnD() {
@@ -127,11 +128,12 @@ async function generateScript() {
 
     // Check if the response is OK (status code 200)
     if (response.ok) {
-      // Parse the JSON response (if applicable)
       const responseData = await response.json(); // Assuming your response is JSON
-      // Update the content or perform other actions based on the response data
-      console.log(responseData);
-      scriptText.innerText = responseData.result;
+      imageUrls = responseData.result; //get imageUrls from backend
+      console.log("Getting results from OpenAI...")
+      finalResult = await getResultFromOpenAI(imageUrls); // use imageurls to pipe to openai vision api
+      scriptText.innerText = finalResult; // print result
+      console.log("finalResult from generateScript: ", finalResult);
 
     } else {
       // Handle error cases
@@ -143,10 +145,62 @@ async function generateScript() {
     toast('Error', error.message, toastStyles.error, 2000);
   } finally {
     // Enable the button and hide loading spinner
+    // call funct to delete images from supabase
     loadingSpinner.classList.add("hidden");
     submitBtn.disabled = false;
     submitBtn.classList.remove("hidden");
     narrateBtn.classList.remove("hidden");
+  }
+}
+
+async function getResultFromOpenAI(imageUrls) {
+  // Build messages array based on imageUrls
+  const messages = [
+    {
+      role: "user",
+      content: [
+        { type: "text", text: "Analyze the images in such a way that you are doing a presentation. Make sure you analyze them in order of the page number, e.g. page_1.png, then page_2.png, so on and so forth. Title slides should only be a few words or ignored. Each individual slide should provide a narrative that is relevant to the slide, be elaborate on each slide. Do not repeat points that have already been made in the script. Use creative license to make the application more fleshed out." 
+        },
+      ],
+    },
+  ];
+
+  // Append image URLs to messages
+  for (const imageUrl of imageUrls) {
+    messages[0].content.push({
+      type: "image_url",
+      image_url: { url: imageUrl },
+    });
+  }
+
+
+  console.log(messages);
+
+  // Make the API request
+  const response = await fetch(visionAPIUrl, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${apiKeyInput.value}`,
+      // Add any other headers if needed
+    },
+    body: JSON.stringify({
+      model: "gpt-4-vision-preview",
+      messages: messages,
+      max_tokens: 4096,
+    }),
+  });
+
+  // Handle the response as needed
+  if (response.ok) {
+    const resultData = await response.json();
+    console.log("resultData getResultsFromOpenAI: ", resultData);
+
+    return resultData.choices[0].message.content;
+    // Update the UI or perform other actions with the resultData
+  } else {
+    console.error("Error:", response.status, response.statusText);
+    // Handle error cases
   }
 }
 

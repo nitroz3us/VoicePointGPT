@@ -52,7 +52,7 @@ async def generate(request: Request, data: str = Form(None), file_upload: Upload
         convert_pdf_to_images(data, pdf_filename) # Convert PDF to images, and upload to supabase storage
         result = retrieve_urls(pdf_filename) # Retrieve signed urls for image files in supabase storage
         # result = analyze_images(pdf_filename, apiKey) # Analyze the images and get the text results from the API
-        delete_folder_from_supabase_storage(pdf_filename) # Schedule the deletion of the folder
+        # delete_folder_from_supabase_storage(pdf_filename) # Schedule the deletion of the folder
         # generate_text_to_speech(result, apiKey, modelChoice, voiceChoice) # Generate the audio file from the API
 
         return {"result": result} # return result
