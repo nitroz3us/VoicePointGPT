@@ -126,31 +126,53 @@ async function generateScript() {
       body: data,
     });
 
-    // Check if the response is OK (status code 200)
-    if (response.ok) {
-      const responseData = await response.json(); // Assuming your response is JSON
-      imageUrls = responseData.result; //get imageUrls from backend
-      console.log("Getting results from OpenAI...")
-      finalResult = await getResultFromOpenAI(imageUrls); // use imageurls to pipe to openai vision api
+    if(!response.ok){
+      loadingSpinner.classList.add("hidden");
+      submitBtn.disabled = false;
+      submitBtn.classList.remove("hidden");
+      narrateBtn.classList.add("hidden");
+    }
+    const responseData = await response.json(); // Assuming your response is JSON
+    imageUrls = responseData.result; //get imageUrls from backend
+    finalResult = await getResultFromOpenAI(imageUrls); // use imageurls to pipe to openai vision api
+    // if finalResult reponse is not ok, then show error
+    if(!finalResult){
+      loadingSpinner.classList.add("hidden");
+      submitBtn.disabled = false;
+      submitBtn.classList.remove("hidden");
+      narrateBtn.classList.add("hidden");
+    }else{
       scriptText.innerText = finalResult; // print result
       console.log("finalResult from generateScript: ", finalResult);
-
-    } else {
-      // Handle error cases
-      console.error("Error:", response.status, response.statusText);
-      toast('Error', response.statusText, toastStyles.error, 2000);
     }
+
+    // // Check if the response is OK (status code 200)
+    // if (response.ok) {
+    //   const responseData = await response.json(); // Assuming your response is JSON
+    //   imageUrls = responseData.result; //get imageUrls from backend
+    //   console.log("Getting results from OpenAI...")
+    //   finalResult = await getResultFromOpenAI(imageUrls); // use imageurls to pipe to openai vision api
+    //   scriptText.innerText = finalResult; // print result
+    //   console.log("finalResult from generateScript: ", finalResult);
+
+    // } else {
+    //   // Handle error cases
+    //   // const errorData = await response.json();
+    //   // console.error("Error:", errorData.error.message);
+    //   // toast('Error', errorData.error.message, toastStyles.error, 2000);
+    // }
   } catch (error) {
     console.error("Error:", error.message);
     toast('Error', error.message, toastStyles.error, 2000);
-  } finally {
-    // Enable the button and hide loading spinner
-    // call funct to delete images from supabase
-    loadingSpinner.classList.add("hidden");
-    submitBtn.disabled = false;
-    submitBtn.classList.remove("hidden");
-    narrateBtn.classList.remove("hidden");
-  }
+  } 
+  // finally {
+  //   // Enable the button and hide loading spinner
+  //   // call funct to delete images from supabase
+  //   loadingSpinner.classList.add("hidden");
+  //   submitBtn.disabled = false;
+  //   submitBtn.classList.remove("hidden");
+  //   narrateBtn.classList.remove("hidden");
+  // }
 }
 
 async function getResultFromOpenAI(imageUrls) {
@@ -177,31 +199,39 @@ async function getResultFromOpenAI(imageUrls) {
   console.log(messages);
 
   // Make the API request
-  const response = await fetch(visionAPIUrl, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${apiKeyInput.value}`,
-      // Add any other headers if needed
-    },
-    body: JSON.stringify({
-      model: "gpt-4-vision-preview",
-      messages: messages,
-      max_tokens: 4096,
-    }),
-  });
-
-  // Handle the response as needed
-  if (response.ok) {
-    const resultData = await response.json();
-    console.log("resultData getResultsFromOpenAI: ", resultData);
-
-    return resultData.choices[0].message.content;
-    // Update the UI or perform other actions with the resultData
-  } else {
-    console.error("Error:", response.status, response.statusText);
-    // Handle error cases
+  try{
+    const response = await fetch(visionAPIUrl, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${apiKeyInput.value}`,
+        // Add any other headers if needed
+      },
+      body: JSON.stringify({
+        model: "gpt-4-vision-preview",
+        messages: messages,
+        max_tokens: 4096,
+      }),
+    });
+  
+    // Handle the response as needed
+    if (response.ok) {
+      const resultData = await response.json();
+      console.log("resultData getResultsFromOpenAI: ", resultData);
+      return resultData.choices[0].message.content;
+      // Update the UI or perform other actions with the resultData
+    } else {
+      const errorData = await response.json();
+      console.error("Error:", errorData.error.message);
+      toast('Error:', errorData.error.message, toastStyles.error, 7000);
+      narrateBtn.classList.add("hidden");
+      // Handle error cases
+    }
+  }catch(error){
+    console.log("error: ", error)
+    toast('Error:', error.message, toastStyles.error, 2000);
   }
+  
 }
 
 async function generateSpeech() {
