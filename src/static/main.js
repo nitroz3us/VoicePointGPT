@@ -163,7 +163,7 @@ async function generateScript() {
     // }
   } catch (error) {
     console.error("Error:", error.message);
-    toast('Error', error.message, toastStyles.error, 2000);
+    toast('Error', error.message, toastStyles.error, 7000);
   } 
   // finally {
   //   // Enable the button and hide loading spinner
@@ -229,7 +229,7 @@ async function getResultFromOpenAI(imageUrls) {
     }
   }catch(error){
     console.log("error: ", error)
-    toast('Error:', error.message, toastStyles.error, 2000);
+    toast('Error:', error.message, toastStyles.error, 7000);
   }
   
 }
@@ -304,9 +304,9 @@ async function generateSpeech() {
 async function saveButton(){
   var apiKey = document.getElementById("apiKeyInput").value;
   // disable all input by default unless api key is valid
-  const isValidApiKey = await validateApiKey(apiKey);  
-  if (!isValidApiKeyFormat(apiKey) || !isValidApiKey) {
-    toast('Error', 'Invalid API key format', toastStyles.error, 2000);
+  // const isValidApiKey = await validateApiKey(apiKey);  
+  const isValidApiKeyGPT4 = await validateApiKeyGPT4(apiKey);
+  if (!isValidApiKeyGPT4){
     loadingSpinnerSave.classList.add("hidden");
     saveBtn.classList.remove("hidden");
     return;
@@ -343,31 +343,37 @@ window.addEventListener("keydown", function (event) {
   }
 });
 
-function isValidApiKeyFormat(apiKey) {
-  // Implement the validation logic for the API key format
-  // Return true if the API key is valid, false otherwise
-  // Example validation logic:
-  return /^sk-[a-zA-Z0-9]{32,}$/.test(apiKey);
-}
-
-async function validateApiKey(apiKey) {
-  const headers = {
-    Authorization: `Bearer ${apiKey}`,
-  };
-
+// validate if api keys has gpt4 access
+async function validateApiKeyGPT4(apiKey) {
   loadingSpinnerSave.classList.remove("hidden");
   saveBtn.classList.add("hidden");
-
-  try {
-    const response = await fetch("https://api.openai.com/v1/engines", { headers });
-    if (response.ok){
+  try{
+    const response = await fetch(visionAPIUrl, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${apiKey}`,
+        // Add any other headers if needed
+      },
+      body: JSON.stringify({
+        model: "gpt-4-vision-preview",
+        messages: "test message",
+        max_tokens: 4096,
+      }),
+    });
+  
+    // Handle the response as needed
+    if (response.ok) {
       toast('Success', 'API key is valid', toastStyles.success, 2000);
       loadingSpinnerSave.classList.add("hidden");
       saveBtn.classList.remove("hidden");
-      return response.ok;
+    }else{
+      const errorData = await response.json();
+      console.error("Error:", errorData.error.message);
+      toast('Error:', errorData.error.message, toastStyles.error, 7000);      
     }
-  } catch (error) {
-    return false;
+  }catch(error){
+    console.log("error: ", error)
+    toast('Error:', error.message, toastStyles.error, 7000);
   }
-} 
-
+}
