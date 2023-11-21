@@ -317,15 +317,25 @@
                 >
                   Generated Script
                 </label>
-                <textarea
+                <!-- <textarea
                   id="scriptText"
-                  class="mt-1 mb-2 block w-full rounded-md border border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 p-4 text-black"
+                  class="markdown mt-1 mb-2 block w-full rounded-md border border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 p-4 text-black"
                   rows="8"
                   placeholder="Generated script will appear here"
                   disabled
                 >
 {{result}}</textarea
+                > -->
+                <div
+                  class="markdown editable mt-1 mb-2 block w-full rounded-md border border-gray-600 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 p-4 text-black"
+                  contenteditable="false"
+                  id="scriptText"
+                  rows="8"
+                  onfocus="handleFocus()"
+                  onblur="handleBlur()"
                 >
+                  {{result}}
+                </div>
               </div>
               <div class="text-black">
                 <div class="flex mt-4 hidden" id="audioDiv">

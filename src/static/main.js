@@ -14,6 +14,7 @@ var apiKeyInput = document.getElementById("apiKeyInput")
 var narrateBtn = document.getElementById("narrateBtn");
 var audioDiv = document.getElementById("audioDiv");
 var loadingAudioSpinner = document.getElementById("loadingAudioSpinner");
+// var editableDiv = document.getElementById('editableDiv');
 
 const apiUrl = "https://api.openai.com/v1/audio/speech";
 const visionAPIUrl = "https://api.openai.com/v1/chat/completions";
@@ -108,13 +109,13 @@ function toggleModal() {
 
 // fetch the result from backend/fastapi
 async function generateScript() {
-  // Prevent the default form submission behavior  
-
+  clearResultBody();
   // Disable the button and show loading spinner
   submitBtn.disabled = true;
   // hide submitBtn
   submitBtn.classList.add("hidden");
   loadingSpinner.classList.remove("hidden");
+  narrateBtn.classList.add("hidden");
 
   try {
     // Fetch the form data asynchronously
@@ -170,6 +171,7 @@ async function generateScript() {
         const filepath = `${pdfFilename}/${pageFilename}`;
         list_of_file_paths.push(filepath);
       });
+
       // call backend to delete files
       const deleteResponse = await fetch("/delete-files", {
         method: "POST",
@@ -194,13 +196,15 @@ async function generateScript() {
   }
 }
 
+//    { type: "text", text: "Analyze the images in such a way that you are doing a presentation. The user will give you the slides in order from first to last. Each image is one slide. Title slides should only be a few words or ignored. Each individual slide should provide a narrative that is relevant to the slide, be elaborate on each slide. Do not repeat points that have already been made in the script. Use creative license to make the application more fleshed out."}
+
 async function getResultFromOpenAI(imageUrls) {
   // Build messages array based on imageUrls
   const messages = [
     {
       role: "user",
       content: [
-        { type: "text", text: "Analyze the images in such a way that you are doing a presentation. Make sure you analyze them in order of the page number, e.g. page_1.png, then page_2.png, so on and so forth. Title slides should only be a few words or ignored. Each individual slide should provide a narrative that is relevant to the slide, be elaborate on each slide. Do not repeat points that have already been made in the script. Use creative license to make the application more fleshed out." 
+        { type: "text", text: "Analyze the images in such a way that you are doing a presentation. The user will give you the slides in order from first to last. Most importantly, each image is 1 slide. Title slides should only be a few words or ignored. Each individual slide should provide a narrative that is relevant to the slide, please elaborate more on each slide. Do not repeat points that have already been made in the script. Use creative license to make the application more fleshed out. Nicely format the texts as markdown. Use newlines between markdown headings."
         },
       ],
     },
@@ -213,9 +217,6 @@ async function getResultFromOpenAI(imageUrls) {
       image_url: { url: imageUrl },
     });
   }
-
-
-  console.log(messages);
 
   // Make the API request
   try{
@@ -236,7 +237,6 @@ async function getResultFromOpenAI(imageUrls) {
     // Handle the response as needed
     if (response.ok) {
       const resultData = await response.json();
-      console.log("resultData getResultsFromOpenAI: ", resultData);
       return resultData.choices[0].message.content;
       // Update the UI or perform other actions with the resultData
     } else {
@@ -256,6 +256,7 @@ async function getResultFromOpenAI(imageUrls) {
 async function generateSpeech() {
   loadingAudioSpinner.classList.remove("hidden");
   narrateBtn.classList.add("hidden");
+  submitBtn.classList.add("hidden");
   
   const maxChunkSize = 4096; // Maximum token limit
   // Split the input text into chunks
@@ -333,8 +334,9 @@ async function saveButton(){
     voiceChoice.disabled = false;
     dragDropInput.disabled = false;
     modelChoice.disabled = false;
-    scriptText.disabled = false;
+    // scriptText.disabled = false;
     submitBtn.disabled = false;
+    scriptText.contentEditable = true;
     dragDropContainer.classList.remove("border-gray-500");
     dragDropContainer.classList.add("border-indigo-500");
     dragDropInput.classList.add("cursor-pointer");
@@ -353,6 +355,10 @@ function closeModal() {
   modal.style.display = "none";
   backdrop.style.display = "none";
   body.style.overflow = ''; // Enable scrolling
+}
+
+function clearResultBody() {
+  scriptText.innerHTML = ""; // Clear the content
 }
 
 // Close the modal on Escape key press
@@ -389,3 +395,22 @@ async function validateApiKey(apiKey) {
     return false;
   }
 } 
+
+
+document.addEventListener('DOMContentLoaded', function () {
+  handleBlur();
+});
+
+function handleFocus() {
+  scriptText.classList.remove('placeholder');
+  if (scriptText.innerHTML.trim() === 'Generated script will appear here') {
+    scriptText.innerHTML = '';
+  }
+}
+
+function handleBlur() {
+  if (scriptText.innerHTML.trim() === '') {
+    scriptText.innerHTML = 'Generated script will appear here';
+    scriptText.classList.add('placeholder');
+  }
+}
