@@ -144,6 +144,7 @@ async function generateScript() {
       narrateBtn.classList.add("hidden");
     }else{
       scriptText.innerText = finalResult; // print result
+      // Do an estimate based on the number of words
     }
   } catch (error) {
     console.error("Error: (this error is when the user did not upload pdf)", error.message);
@@ -203,7 +204,7 @@ async function getResultFromOpenAI(imageUrls) {
     {
       role: "user",
       content: [
-        { type: "text", text: "Analyze the images in such a way that you are doing a presentation. The user will give you the slides in order from first to last. Most importantly, each image is 1 slide. Title slides should only be a few words or ignored. Each individual slide should provide a narrative that is relevant to the slide. Each slide should at least be more than 2 sentences. Do not write the slide numbers. Do not repeat points that have already been made in the script. Use creative license to make the presentation more fleshed out."
+        { type: "text", text: "Analyze the images in such a way that you are doing a presentation. The user will give you the slides in order from first to last. Most importantly, each image is 1 slide. For title slides with less than 10 words, make the script one that transitions to the new title. Each individual slide should have a narrative that is relevant to the slide. Each slide should at least be more than 2 sentences. Do not write the slide numbers. Do not repeat points that have already been made in the script. Use creative license to make the presentation more fleshed out."
         },
       ],
     },
