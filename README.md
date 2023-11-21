@@ -33,7 +33,7 @@ To get started with GPThreatIntel-Summarizer, follow these steps:
 
 ## Getting Started (Online)
 
-1. Access the web interface in your browser at {url_soon}
+1. Access the web interface in your browser at https://voice-point-gpt.vercel.app/
 
 
 ## Usage
