@@ -203,7 +203,7 @@ async function getResultFromOpenAI(imageUrls) {
     {
       role: "user",
       content: [
-        { type: "text", text: "Analyze the images in such a way that you are doing a presentation. The user will give you the slides in order from first to last. Most importantly, each image is 1 slide. Title slides should only be a few words or ignored. Each individual slide should provide a narrative that is relevant to the slide, please elaborate more on each slide. It should at least be more than 2 sentences. Do not repeat points that have already been made in the script. Use creative license to make the application more fleshed out."
+        { type: "text", text: "Analyze the images in such a way that you are doing a presentation to an audience. The user will give you the slides in order from first to last. Most importantly, each image is 1 slide. Title slides should only be a few words or ignored. Each individual slide should provide a narrative that is relevant to the slide, please elaborate more on each slide. It should at least be more than 2 sentences. Do not repeat points that have already been made in the script. Use creative license to make the application more fleshed out."
         },
       ],
     },
@@ -260,8 +260,8 @@ async function generateSpeech() {
   const maxChunkSize = 4096; // Maximum token limit
   // Split the input text into chunks
   const textChunks = [];
-  for (let i = 0; i < scriptText.value.length; i += maxChunkSize) {
-    textChunks.push(scriptText.value.slice(i, i + maxChunkSize));
+  for (let i = 0; i < scriptText.innerText.length; i += maxChunkSize) {
+    textChunks.push(scriptText.innerText.slice(i, i + maxChunkSize));
   }
 
   const audioChunks = [];
