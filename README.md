@@ -3,9 +3,9 @@
 
 ## Key Features
 
-- Script Generation: Analyze your slides and get a ready-made script.
-- Voiceover Option: Choose to add a voiceover to your presentation for a complete package.
-- User-Friendly Interface: Easy-to-use platform for seamless navigation.
+- **Script Generation:** Analyze your slides and get a ready-made script.
+- **Voiceover Option:** Choose to add a voiceover to your presentation for a complete package.
+- **User-Friendly Interface:** Easy-to-use platform for seamless navigation.
 
 ## Getting Started (Locally)
 
@@ -24,11 +24,11 @@ To get started with GPThreatIntel-Summarizer, follow these steps:
     ```
     
 3. Set up your ```.env``` file
-  ```bash
-  SUPABASE_URL = 
-  SUPABASE_KEY =
-  SUPABASE_BUCKET_NAME =
-  ```
+    ```bash
+    SUPABASE_URL = 
+    SUPABASE_KEY =
+    SUPABASE_BUCKET_NAME =
+    ```
 
 4. Run the application:
    
