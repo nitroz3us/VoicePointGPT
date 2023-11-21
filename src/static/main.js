@@ -203,7 +203,7 @@ async function getResultFromOpenAI(imageUrls) {
     {
       role: "user",
       content: [
-        { type: "text", text: "Analyze the images in such a way that you are doing a presentation to an audience. The user will give you the slides in order from first to last. Most importantly, each image is 1 slide. Title slides should only be a few words or ignored. Each individual slide should provide a narrative that is relevant to the slide, please elaborate more on each slide. It should at least be more than 2 sentences. Do not repeat points that have already been made in the script. Use creative license to make the application more fleshed out."
+        { type: "text", text: "Analyze the images in such a way that you are doing a presentation. The user will give you the slides in order from first to last. Most importantly, each image is 1 slide. Title slides should only be a few words or ignored. Each individual slide should provide a narrative that is relevant to the slide. Each slide should at least be more than 2 sentences. Do not write the slide numbers. Do not repeat points that have already been made in the script. Use creative license to make the presentation more fleshed out."
         },
       ],
     },
@@ -316,6 +316,7 @@ async function generateSpeech() {
   audioElement.play();
   audioDiv.classList.remove('hidden');
   narrateBtn.classList.remove("hidden");
+  submitBtn.classList.remove("hidden");
   loadingAudioSpinner.classList.add("hidden");
   toast('Success', 'Audio generated', toastStyles.success, 2000);
 }
