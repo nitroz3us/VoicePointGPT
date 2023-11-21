@@ -22,14 +22,21 @@ To get started with GPThreatIntel-Summarizer, follow these steps:
     ```bash
     pip install -r requirements.txt
     ```
+    
+3. Set up your ```.env``` file
+  ```bash
+  SUPABASE_URL = 
+  SUPABASE_KEY =
+  SUPABASE_BUCKET_NAME =
+  ```
 
-3. Run the application:
+4. Run the application:
    
     ```bash
     uvicorn app:app --host localhost --port 3000 --reload
     ```
     
-4. Access the web interface in your browser at http://localhost:3000.
+5. Access the web interface in your browser at http://localhost:3000.
 
 ## Getting Started (Online)
 
@@ -40,12 +47,6 @@ To get started with GPThreatIntel-Summarizer, follow these steps:
 1. Enter your OpenAI API Key, which can be found here [Has to be GPT4]
     - https://platform.openai.com/account/api-keys
     - https://help.openai.com/en/articles/7102672-how-can-i-access-gpt-4 [Accessing GPT4]
-2. Set up your ```.env``` file
-  ```bash
-  SUPABASE_URL = 
-  SUPABASE_KEY =
-  SUPABASE_BUCKET_NAME =
-  ```
 
 ## Demo
 
