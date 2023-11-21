@@ -39,6 +39,7 @@ To get started with GPThreatIntel-Summarizer, follow these steps:
 ## Usage
 1. Enter your OpenAI API Key, which can be found here [Has to be GPT4]
     - https://platform.openai.com/account/api-keys
+    - https://help.openai.com/en/articles/7102672-how-can-i-access-gpt-4 [Accessing GPT4]
 2. Set up your ```.env``` file
   ```bash
   SUPABASE_URL = 
@@ -48,7 +49,10 @@ To get started with GPThreatIntel-Summarizer, follow these steps:
 
 ## Demo
 
-{soon}
+
+https://github.com/nitroz3us/VoicePointGPT/assets/109442833/0c9ca210-da09-4044-9eed-e67154ac9b71
+
+
  
 ## Why am I doing this?
 - Wanted to try out OpenAI Vision API & Text-To-Speech
