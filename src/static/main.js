@@ -14,7 +14,11 @@ var apiKeyInput = document.getElementById("apiKeyInput")
 var narrateBtn = document.getElementById("narrateBtn");
 var audioDiv = document.getElementById("audioDiv");
 var loadingAudioSpinner = document.getElementById("loadingAudioSpinner");
-// var editableDiv = document.getElementById('editableDiv');
+var totalWords = document.getElementById("totalWords");
+var minutes = document.getElementById("totalMinutes");
+var seconds = document.getElementById("totalSeconds");
+
+const audioElement = document.querySelector('audio');
 
 const apiUrl = "https://api.openai.com/v1/audio/speech";
 const visionAPIUrl = "https://api.openai.com/v1/chat/completions";
@@ -132,8 +136,16 @@ async function generateScript() {
       narrateBtn.classList.add("hidden");
     }
     const responseData = await response.json(); // Assuming your response is JSON
-    imageUrls = responseData.result; //get imageUrls from backend
-    finalResult = await getResultFromOpenAI(imageUrls); // use imageurls to pipe to openai vision api
+    var imageUrls = responseData.result; //get imageUrls from backend
+    var finalResult = await getResultFromOpenAI(imageUrls); // use imageurls to pipe to openai vision api
+    var wordCount = finalResult.split(" ").length; // get word count
+    var averageReadingSpeed = 130; // words per minute
+    var estimatedMinutes = wordCount / averageReadingSpeed;
+    console.log(estimatedMinutes);
+    var minutes = Math.floor(estimatedMinutes);
+    console.log(minutes);
+    var seconds = Math.round((estimatedMinutes % 1) * 60);
+    console.log(seconds);
 
 
     // if finalResult reponse is not ok, then show error
@@ -144,55 +156,26 @@ async function generateScript() {
       narrateBtn.classList.add("hidden");
     }else{
       scriptText.innerText = finalResult; // print result
+      totalWords.innerText = wordCount;
+      totalMinutes.innerText = minutes;
+      totalSeconds.innerText = seconds;
       // Do an estimate based on the number of words
     }
   } catch (error) {
+    narrateBtn.classList.add("hidden");
     console.error("Error: (this error is when the user did not upload pdf)", error.message);
     toast('Error', 'No PDF found', toastStyles.error, 7000);
-
-    // hide narrateBtn
-    narrateBtn.classList.add("hidden");
   }finally {
+    // Enable the button and hide loading spinner
+    loadingSpinner.classList.add("hidden");
+    submitBtn.disabled = false;
+    submitBtn.classList.remove("hidden");
+    narrateBtn.classList.remove("hidden");
 
 
-    var list_of_file_paths = [];
-    // check if imageurls is not empty
-    if(imageUrls.length > 0){
-      // Enable the button and hide loading spinner
-      loadingSpinner.classList.add("hidden");
-      submitBtn.disabled = false;
-      submitBtn.classList.remove("hidden");
-      narrateBtn.classList.remove("hidden");
-      imageUrls.forEach((imageUrl, index) => {
-        const urlObject = new URL(imageUrl);
-        const parts = urlObject.pathname.split("/");
-        const pdfFilename = parts[parts.length - 2]; // FancyBear.pdf
-        const pageFilename = parts[parts.length - 1]; // page_1.png
-        const filepath = `${pdfFilename}/${pageFilename}`;
-        list_of_file_paths.push(filepath);
-      });
 
-      // call backend to delete files
-      const deleteResponse = await fetch("/delete-files", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded",
-        },
-        body: new URLSearchParams({
-          pdf_filename: list_of_file_paths,  // replace with the actual pdf_filename
-        }),
-      });
-
-      // Check if the response is OK
-      if (deleteResponse.ok) {
-        console.log("Files deleted successfully");
-      } else {
-        console.error("Error deleting files:", deleteResponse.statusText);
-      }
-    }else{
-      narrateBtn.classList.add("hidden");
-      toast('Error', 'No PDF found', toastStyles.error, 7000);
-    }
+    // delete files
+    await deleteFiles(imageUrls); 
   }
 }
 
@@ -204,7 +187,7 @@ async function getResultFromOpenAI(imageUrls) {
     {
       role: "user",
       content: [
-        { type: "text", text: "Analyze the images in such a way that you are doing a presentation. The user will give you the slides in order from first to last. Most importantly, each image is 1 slide. For title slides with less than 10 words, make the script one that transitions to the new title. Each individual slide should have a narrative that is relevant to the slide. Each slide should at least be more than 2 sentences. Do not write the slide numbers. Do not repeat points that have already been made in the script. Use creative license to make the presentation more fleshed out."
+        { type: "text", text: "Analyze the images in such a way that you are doing a presentation. Pretend that you are presenting to an audience. The user will give you the slides in order from first to last. Most importantly, each image is 1 slide. For title slides with less than 10 words, make the script one that transitions to the new title. Each individual slide should have a narrative that is relevant to the slide. Each slide should be more than 2 sentences. Do not use big bold words. Do not write the slide numbers. Do not repeat points that have already been made in the script. Use creative license to make the presentation more fleshed out."
         },
       ],
     },
@@ -233,24 +216,19 @@ async function getResultFromOpenAI(imageUrls) {
         max_tokens: 4096,
       }),
     });
-  
-    // Handle the response as needed
-    if (response.ok) {
-      const resultData = await response.json();
-      return resultData.choices[0].message.content;
-      // Update the UI or perform other actions with the resultData
-    } else {
-      const errorData = await response.json();
-      console.error("Error:", errorData.error.message);
-      toast('Error:', errorData.error.message, toastStyles.error, 7000);
+    
+    // Check if the response is OK
+    const resultData = await response.json();
+    if (!response.ok) {
       narrateBtn.classList.add("hidden");
-      // Handle error cases
+      toast('Error:', resultData.error.message, toastStyles.error, 7000);
+    }else{
+      return resultData.choices[0].message.content;
     }
+    // Return the result
   }catch(error){
-    console.log("error: ", error)
-    toast('Error:', error.message, toastStyles.error, 7000);
-  }
-  
+    await deleteFiles(imageUrls); 
+  } 
 }
 
 async function generateSpeech() {
@@ -358,10 +336,56 @@ function closeModal() {
   body.style.overflow = ''; // Enable scrolling
 }
 
-function clearResultBody() {
-  scriptText.innerHTML = ""; // Clear the content
+// Delete files
+async function deleteFiles(imageUrls) {
+  var list_of_file_paths = [];
+
+  // check if imageurls is not empty
+  if(imageUrls.length > 0){
+      
+    imageUrls.forEach((imageUrl, index) => {
+      const urlObject = new URL(imageUrl);
+      const parts = urlObject.pathname.split("/");
+      const pdfFilename = parts[parts.length - 2]; // FancyBear.pdf
+      const pageFilename = parts[parts.length - 1]; // page_1.png
+      const filepath = `${pdfFilename}/${pageFilename}`;
+      list_of_file_paths.push(filepath);
+    });
+
+  }else{
+    narrateBtn.classList.add("hidden");
+    toast('Error', 'No PDF found', toastStyles.error, 7000);
+  }
+  // Make the API request
+  const response = await fetch("/delete-files", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/x-www-form-urlencoded",
+    },
+    body: new URLSearchParams({
+      pdf_filename: list_of_file_paths,
+    }),
+  });
+
+  // Check if the response is OK
+  if (response.ok) {
+    console.log("Files deleted successfully");
+  } else {
+    console.error("Error deleting files:", response.statusText);
+  }
 }
 
+function clearResultBody() {
+  scriptText.innerHTML = "";
+  // Pause the audio (if playing)
+  audioElement.pause();
+
+  // Set the audio source to an empty string
+  audioElement.src = '';
+
+  // Hide the audio UI container
+  audioDiv.classList.add('hidden');
+}
 // Close the modal on Escape key press
 window.addEventListener("keydown", function (event) {
   if (event.key === "Escape") {

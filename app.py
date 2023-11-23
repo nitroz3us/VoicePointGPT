@@ -54,7 +54,7 @@ async def generate(request: Request, data: str = Form(None), file_upload: Upload
 
         return {"result": result} # return result
     
-# New endpoint to delete files in Supabase storage
+# Endpoint to delete files in Supabase storage
 @app.post("/delete-files", response_class=JSONResponse)
 async def delete_files(request: Request, pdf_filename: str = Form(...)):
     list_of_file_paths = pdf_filename.split(',')
@@ -116,81 +116,3 @@ def retrieve_urls(pdf_filename):
         image_urls.append(get_all_signed_url['signedURL'])
     print("\nRetrieving SignedURL: \n",image_urls) # works
     return image_urls
-
-# Use the urls to pipe it to OpenAI Visions API for processing, get the text results from the API. Based off the image.
-def analyze_images(pdf_filename, user_apiKey):
-    """
-    Analyze the signed urls for image files in supabase storage
-    """
-    image_urls = retrieve_urls(pdf_filename)
-    print("\n Analyze Image signed URL", image_urls) # works
-
-    # retrieve OpenAI Key here, from the frontend
-    client = OpenAI(api_key=user_apiKey)
-
-    # Create messages with the signed URLs
-    messages = [
-        {
-            "role": "user",  # system
-            "content": [
-                {
-                    "type": "text",
-                    "text": "Analyze the images in such a way that you are doing a presentation. Make sure you analyze them in order of the page number, e.g. page_1.png, then page_2.png, so on and so forth. Title slides should only be a few words or ignored. Each individual slide should provide a narrative that is relevant to the slide, be elaborate on each slide. Do not repeat points that have already been made in the script. Use creative license to make the application more fleshed out.",
-                },
-            ],
-        },
-    ]
-
-    for signed_url in image_urls:
-        messages[0]["content"].append({"type": "image_url", "image_url": {"url": signed_url}})
-
-    try:
-        # Request completion from the GPT-4 Vision model
-        response = client.chat.completions.create(
-            model="gpt-4-vision-preview",
-            messages=messages,
-            max_tokens=4096,
-        )
-        # Print or use the response from OpenAI
-        print(response.choices[0].message.content)
-        return response.choices[0].message.content
-    except Exception as e:
-        print('\n\n\n', e)
-
-
-# Combine all of the text and pipe it to OpenAI Text to Speech API, get the audio file from the API
-def generate_text_to_speech(text_result, user_apiKey, modelChoice, voiceChoice):
-    """
-    Combine all of the text and pipe it to OpenAI Text to Speech API, get the audio file from the API
-    """
-    client = OpenAI(api_key=user_apiKey)
-    speech_file_path = Path(__file__).parent / "speech.mp3"
-
-    # Define the chunk size (you may need to adjust this based on the API's requirements)
-    chunk_size = 4000
-
-    print("Generating audio file... \n")
-    
-    chunks = [text_result[i:i + chunk_size] for i in range(0, len(text_result), chunk_size)]
-
-    # Initialize an empty list to store the audio chunks
-    audio_chunks = []
-
-    print("Chunking audio file... \n")
-    for chunk in chunks:
-        response = client.audio.speech.create(
-            model=modelChoice,
-            voice=voiceChoice,
-            input=chunk,
-        )
-        audio_chunks.append(response.content)
-
-    # Concatenate the audio chunks
-    audio = b"".join(audio_chunks)
-    print("Chunks Done? \n")
-
-    # Write the concatenated audio to the file
-    with open(speech_file_path, "wb") as file:
-        file.write(audio)
-
-    print("Audio file generated! \n") 
