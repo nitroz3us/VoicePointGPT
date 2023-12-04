@@ -64,19 +64,16 @@
     <div
       class="main-body fade-in-down mt-20 m-10 max-w-screen-2xl relative mx-auto"
     >
-      <div class="flex flex-col justify-center items-center">
+      <div class="max-w-3xl mx-auto">
         <h1
-          class="w-full font-bold text-black text-4xl md:text-7xl drop-shadow-sm text-center font-display bg-gradient-to-r from-black to-stone-500 bg-clip-text text-transparent"
+          class="title-head font-bold text-black text-4xl md:text-7xl drop-shadow-sm text-center font-display bg-gradient-to-r from-black to-stone-500 bg-clip-text text-transparent"
         >
           Effortless narration
+          <span
+            class="bg-gradient-to-r from-blue-500 to-indigo-500 bg-clip-text text-transparent text-center font-bold text-4xl md:text-7xl"
+            >with VoicePointGPT</span
+          >
         </h1>
-        <span
-          href=""
-          target="_blank"
-          class="bg-gradient-to-r from-blue-500 to-indigo-500 bg-clip-text text-transparent text-center font-bold text-4xl md:text-7xl"
-        >
-          with VoicePointGPT
-        </span>
         <div class="md:text-xl text-center text-gray-500 mt-6">
           Just upload your PDF and automatically
         </div>
@@ -323,11 +320,7 @@
                   contenteditable="false"
                   id="scriptText"
                   rows="8"
-                  onfocus="handleFocus()"
-                  onblur="handleBlur()"
-                >
-                  {{result}}
-                </div>
+                ></div>
                 <div class="text-xs text-gray-500 mt-2">
                   <label>Total Words: <span id="totalWords">0</span></label
                   ><span style="margin: 0 10px">|</span

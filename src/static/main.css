@@ -42,7 +42,6 @@
 }
 
 
-
 .placeholder {
   color: #a0a0a0;
 }
@@ -143,4 +142,8 @@
 .markdown a:hover {
   color: #363636;
   text-decoration: underline;
+}
+
+.title-head {
+  text-wrap: balance;
 }

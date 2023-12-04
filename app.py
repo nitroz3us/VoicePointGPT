@@ -1,8 +1,8 @@
-from io import BytesIO
 import os
 import fitz
 import string
 import datetime
+from io import BytesIO
 from pathlib import Path
 from PIL import Image
 from openai import OpenAI
@@ -18,7 +18,6 @@ from fastapi.middleware.cors import CORSMiddleware
 app = FastAPI()
 app.add_middleware(
     CORSMiddleware,
-    # define the allowed origins explicitly, currently this wildcard is NOT recommended
     allow_origins=['*'],
     allow_credentials=True,
     allow_methods=["*"],
@@ -50,9 +49,9 @@ async def generate(request: Request, data: str = Form(None), file_upload: Upload
         pdf_filename = f"{current_time}_"
 
         convert_pdf_to_images(data, pdf_filename) # Convert PDF to images, and upload to supabase storage
-        result = retrieve_urls(pdf_filename) # Retrieve signed urls for image files in supabase storage
+        urls = retrieve_urls(pdf_filename) # Retrieve signed urls for image files in supabase storage
 
-        return {"result": result} # return result
+        return {"result": urls} # return result
     
 # Endpoint to delete files in Supabase storage
 @app.post("/delete-files", response_class=JSONResponse)
@@ -87,6 +86,7 @@ def convert_pdf_to_images(data: bytes, pdf_filename: str):
         numeric_part = page_number // len(alphabet) + 1
         letter = alphabet[page_number % len(alphabet)]
         combined_name = f"{numeric_part}{letter}"  # Numeric part increases first
+        # Upload image to supabase storage
         upload_image_to_supabase(image_bytes, pdf_filename, combined_name)
 
     pdf_document.close()

@@ -1,23 +1,19 @@
 var voiceChoice = document.getElementById("voiceChoice")
 var dragDropContainer = document.getElementById("dragDropContainer")
 var dragDropInput = document.getElementById("dragDropInput")
-
 var submitBtn = document.getElementById("submitBtn");
 var loadingSpinner = document.getElementById("loadingSpinner");
 var scriptText = document.getElementById("scriptText");
-
 var loadingSpinnerSave = document.getElementById("loadingSpinnerSave");
 var saveBtn = document.getElementById("saveBtn");
-
 var modelChoice = document.getElementById("modelChoice");
 var apiKeyInput = document.getElementById("apiKeyInput")
 var narrateBtn = document.getElementById("narrateBtn");
 var audioDiv = document.getElementById("audioDiv");
 var loadingAudioSpinner = document.getElementById("loadingAudioSpinner");
 var totalWords = document.getElementById("totalWords");
-var minutes = document.getElementById("totalMinutes");
-var seconds = document.getElementById("totalSeconds");
-
+var totalMinutes = document.getElementById("totalMinutes");
+var totalSeconds = document.getElementById("totalSeconds");
 const audioElement = document.querySelector('audio');
 
 const apiUrl = "https://api.openai.com/v1/audio/speech";
@@ -139,14 +135,6 @@ async function generateScript() {
     var imageUrls = responseData.result; //get imageUrls from backend
     var finalResult = await getResultFromOpenAI(imageUrls); // use imageurls to pipe to openai vision api
     var wordCount = finalResult.split(" ").length; // get word count
-    var averageReadingSpeed = 130; // words per minute
-    var estimatedMinutes = wordCount / averageReadingSpeed;
-    console.log(estimatedMinutes);
-    var minutes = Math.floor(estimatedMinutes);
-    console.log(minutes);
-    var seconds = Math.round((estimatedMinutes % 1) * 60);
-    console.log(seconds);
-
 
     // if finalResult reponse is not ok, then show error
     if(!finalResult){
@@ -156,10 +144,7 @@ async function generateScript() {
       narrateBtn.classList.add("hidden");
     }else{
       scriptText.innerText = finalResult; // print result
-      totalWords.innerText = wordCount;
-      totalMinutes.innerText = minutes;
-      totalSeconds.innerText = seconds;
-      // Do an estimate based on the number of words
+      getWordCount(wordCount); // get word count and estimated time
     }
   } catch (error) {
     narrateBtn.classList.add("hidden");
@@ -171,9 +156,6 @@ async function generateScript() {
     submitBtn.disabled = false;
     submitBtn.classList.remove("hidden");
     narrateBtn.classList.remove("hidden");
-
-
-
     // delete files
     await deleteFiles(imageUrls); 
   }
@@ -201,7 +183,7 @@ async function getResultFromOpenAI(imageUrls) {
     });
   }
 
-  // Make the API request
+  // Make the API request to Vision API
   try{
     const response = await fetch(visionAPIUrl, {
       method: "POST",
@@ -229,6 +211,18 @@ async function getResultFromOpenAI(imageUrls) {
   }catch(error){
     await deleteFiles(imageUrls); 
   } 
+}
+
+// get word count and estimated time
+function getWordCount(wordCount) {
+  var averageReadingSpeed = 130; // words per minute
+  var estimatedMinutes = wordCount / averageReadingSpeed;
+  var minutes = Math.floor(estimatedMinutes); // round down the minutes
+  var seconds = Math.round((estimatedMinutes % 1) * 60); // round up the seconds
+
+  totalWords.innerText = wordCount;
+  totalMinutes.innerText = minutes;
+  totalSeconds.innerText = seconds;
 }
 
 async function generateSpeech() {
@@ -336,7 +330,8 @@ function closeModal() {
   body.style.overflow = ''; // Enable scrolling
 }
 
-// Delete files
+// Delete files from supabase storage
+// Send a POST request to the backend to trigger /delete-files
 async function deleteFiles(imageUrls) {
   var list_of_file_paths = [];
 
@@ -375,24 +370,6 @@ async function deleteFiles(imageUrls) {
   }
 }
 
-function clearResultBody() {
-  scriptText.innerHTML = "";
-  // Pause the audio (if playing)
-  audioElement.pause();
-
-  // Set the audio source to an empty string
-  audioElement.src = '';
-
-  // Hide the audio UI container
-  audioDiv.classList.add('hidden');
-}
-// Close the modal on Escape key press
-window.addEventListener("keydown", function (event) {
-  if (event.key === "Escape") {
-    closeModal();
-  }
-});
-
 function isValidApiKeyFormat(apiKey) {
   // Implement the validation logic for the API key format
   // Return true if the API key is valid, false otherwise
@@ -420,22 +397,25 @@ async function validateApiKey(apiKey) {
     return false;
   }
 } 
-
+// Close the modal on Escape key press
+window.addEventListener("keydown", function (event) {
+  if (event.key === "Escape") {
+    closeModal();
+  }
+});
 
 document.addEventListener('DOMContentLoaded', function () {
   handleBlur();
 });
 
-function handleFocus() {
-  scriptText.classList.remove('placeholder');
-  if (scriptText.innerHTML.trim() === 'Generated script will appear here') {
-    scriptText.innerHTML = '';
-  }
-}
+function clearResultBody() {
+  scriptText.innerHTML = "";
+  // Pause the audio (if playing)
+  audioElement.pause();
 
-function handleBlur() {
-  if (scriptText.innerHTML.trim() === '') {
-    scriptText.innerHTML = 'Generated script will appear here';
-    scriptText.classList.add('placeholder');
-  }
+  // Set the audio source to an empty string
+  audioElement.src = '';
+
+  // Hide the audio UI container
+  audioDiv.classList.add('hidden');
 }
