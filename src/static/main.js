@@ -296,12 +296,15 @@ async function generateSpeech() {
 
 async function saveButton(){
   var apiKey = document.getElementById("apiKeyInput").value;
-  // disable all input by default unless api key is valid
-  const isValidApiKey = await validateApiKey(apiKey);  
-  if (!isValidApiKeyFormat(apiKey) || !isValidApiKey) {
+  // check if api key input is empty
+  if(apiKey === ""){
+    toast('Error', 'API key is empty', toastStyles.error, 2000);
+    return;
+  }else if(!isValidApiKeyFormat(apiKey)){
     toast('Error', 'Invalid API key format', toastStyles.error, 2000);
-    loadingSpinnerSave.classList.add("hidden");
-    saveBtn.classList.remove("hidden");
+    return;
+  }else if(!await validateApiKey(apiKey)){
+    toast('Error', 'Invalid API key', toastStyles.error, 2000);
     return;
   }else{
     voiceChoice.disabled = false;
@@ -392,6 +395,10 @@ async function validateApiKey(apiKey) {
       loadingSpinnerSave.classList.add("hidden");
       saveBtn.classList.remove("hidden");
       return response.ok;
+    }else{
+      loadingSpinnerSave.classList.add("hidden");
+      saveBtn.classList.remove("hidden");
+      return false;
     }
   } catch (error) {
     return false;
