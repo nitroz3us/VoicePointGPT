@@ -62,6 +62,7 @@ https://github.com/nitroz3us/VoicePointGPT/assets/109442833/0c9ca210-da09-4044-9
 - OpenAI
 - FastAPI
 - TailwindCSS
+- Supabase
 
 ## Contributing
 Contributions are welcome! If you have any suggestions, bug reports, or feature requests, please open an issue or submit a pull request.
