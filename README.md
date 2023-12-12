@@ -53,7 +53,9 @@ To get started with GPThreatIntel-Summarizer, follow these steps:
 
 https://github.com/nitroz3us/VoicePointGPT/assets/109442833/0c9ca210-da09-4044-9eed-e67154ac9b71
 
-
+## Limitations
+- Maximum of 32 slides.
+- Within the token limit of GPT4 Vision.
  
 ## Why am I doing this?
 - Wanted to try out OpenAI Vision API & Text-To-Speech
