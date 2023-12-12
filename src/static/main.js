@@ -148,8 +148,8 @@ async function generateScript() {
     }
   } catch (error) {
     narrateBtn.classList.add("hidden");
-    console.error("Error: (this error is when the user did not upload pdf)", error.message);
-    toast('Error', 'No PDF found', toastStyles.error, 7000);
+    console.error("Error: ", error.message);
+    toast('Error', error.message, toastStyles.error, 7000);
   }finally {
     // Enable the button and hide loading spinner
     loadingSpinner.classList.add("hidden");
@@ -310,7 +310,6 @@ async function saveButton(){
     voiceChoice.disabled = false;
     dragDropInput.disabled = false;
     modelChoice.disabled = false;
-    // scriptText.disabled = false;
     submitBtn.disabled = false;
     scriptText.contentEditable = true;
     dragDropContainer.classList.remove("border-gray-500");

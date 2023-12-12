@@ -85,7 +85,7 @@ def convert_pdf_to_images(data: bytes, pdf_filename: str):
 
         numeric_part = page_number // len(alphabet) + 1
         letter = alphabet[page_number % len(alphabet)]
-        combined_name = f"{numeric_part}{letter}"  # Numeric part increases first
+        combined_name = f"{numeric_part}{letter}"
         # Upload image to supabase storage
         upload_image_to_supabase(image_bytes, pdf_filename, combined_name)
 
