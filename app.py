@@ -48,10 +48,14 @@ async def generate(request: Request, data: str = Form(None), file_upload: Upload
         current_time = datetime.datetime.now().strftime("%Y%m%d%H%M%S%f")
         pdf_filename = f"{current_time}_"
 
-        convert_pdf_to_images(data, pdf_filename) # Convert PDF to images, and upload to supabase storage
-        urls = retrieve_urls(pdf_filename) # Retrieve signed urls for image files in supabase storage
+        result = convert_pdf_to_images(data, pdf_filename)
 
-        return {"result": urls} # return result
+        if "error" in result:
+            return {"error": result["error"]}
+
+        # If there's no error, return the signed urls
+        urls = retrieve_urls(pdf_filename)
+        return {"result": urls}
     
 # Endpoint to delete files in Supabase storage
 @app.post("/delete-files", response_class=JSONResponse)
@@ -69,10 +73,15 @@ async def delete_files(request: Request, pdf_filename: str = Form(...)):
 # Convert PDF to image, enumerate pages
 def convert_pdf_to_images(data: bytes, pdf_filename: str):
     pdf_document = fitz.open("pdf", data)
-    
+
     # Use string.ascii_lowercase for lowercase letters
     alphabet = string.ascii_lowercase
-    
+
+    # Check if the total number of pages exceeds 32
+    if pdf_document.page_count > 32:
+        print("Too many slides. Limit exceeded (32 slides max).")
+        return {"error": "Too many slides. Limit exceeded (32 slides max.)", "urls": []}
+
     for page_number in range(pdf_document.page_count):
         print("PDF converting to images... \n")
         page = pdf_document.load_page(page_number)
@@ -90,6 +99,10 @@ def convert_pdf_to_images(data: bytes, pdf_filename: str):
         upload_image_to_supabase(image_bytes, pdf_filename, combined_name)
 
     pdf_document.close()
+
+    # Return success message if there's no error
+    return {"success": "Slides converted successfully.", "urls": []}
+
 
 # Upload those pages to supabase storage, create a folder using the name of the PDF file, and store the images in that folder
 def upload_image_to_supabase(image_bytes: bytes, pdf_filename: str, page_name: str):

@@ -117,6 +117,8 @@ async function generateScript() {
   loadingSpinner.classList.remove("hidden");
   narrateBtn.classList.add("hidden");
 
+  let imageUrls = []; // Define imageUrls outside the try block
+
   try {
     // Fetch the form data asynchronously
     const data = new FormData(document.getElementById("generateForm"));
@@ -125,41 +127,47 @@ async function generateScript() {
       body: data,
     });
 
-    if(!response.ok){
-      loadingSpinner.classList.add("hidden");
-      submitBtn.disabled = false;
-      submitBtn.classList.remove("hidden");
-      narrateBtn.classList.add("hidden");
+    if (!response.ok) {
+      throw new Error(`Failed to fetch data. Status: ${response.status}`);
     }
-    const responseData = await response.json(); // Assuming your response is JSON
-    var imageUrls = responseData.result; //get imageUrls from backend
-    var finalResult = await getResultFromOpenAI(imageUrls); // use imageurls to pipe to openai vision api
-    var wordCount = finalResult.split(" ").length; // get word count
 
-    // if finalResult reponse is not ok, then show error
-    if(!finalResult){
-      loadingSpinner.classList.add("hidden");
-      submitBtn.disabled = false;
-      submitBtn.classList.remove("hidden");
-      narrateBtn.classList.add("hidden");
-    }else{
-      scriptText.innerText = finalResult; // print result
-      getWordCount(wordCount); // get word count and estimated time
+    const responseData = await response.json();
+    
+    if (responseData.error) {
+      
+      throw new Error(responseData.error);
     }
+
+    imageUrls = responseData.result; // Update imageUrls inside the try block
+
+    var finalResult = await getResultFromOpenAI(imageUrls);
+    var wordCount = finalResult.split(" ").length;
+
+    if (!finalResult) {
+      throw new Error("Failed to get result from OpenAI.");
+    }
+
+    scriptText.innerText = finalResult;
+    getWordCount(wordCount);
   } catch (error) {
-    narrateBtn.classList.add("hidden");
-    console.error("Error: ", error.message);
-    toast('Error', error.message, toastStyles.error, 7000);
-  }finally {
-    // Enable the button and hide loading spinner
     loadingSpinner.classList.add("hidden");
     submitBtn.disabled = false;
     submitBtn.classList.remove("hidden");
-    narrateBtn.classList.remove("hidden");
-    // delete files
-    await deleteFiles(imageUrls); 
+    narrateBtn.classList.add("hidden");
+    console.error("Error: ", error.message);
+    toast('Error', error.message, toastStyles.error, 7000);
+  } finally {    
+    // Delete files only if imageUrls is defined
+    if (imageUrls.length > 0) {
+      loadingSpinner.classList.add("hidden");
+      submitBtn.disabled = false;
+      submitBtn.classList.remove("hidden");
+      narrateBtn.classList.remove("hidden");
+      await deleteFiles(imageUrls);
+    }
   }
 }
+
 
 //    { type: "text", text: "Analyze the images in such a way that you are doing a presentation. The user will give you the slides in order from first to last. Each image is one slide. Title slides should only be a few words or ignored. Each individual slide should provide a narrative that is relevant to the slide, be elaborate on each slide. Do not repeat points that have already been made in the script. Use creative license to make the application more fleshed out."}
 
@@ -410,9 +418,7 @@ window.addEventListener("keydown", function (event) {
   }
 });
 
-document.addEventListener('DOMContentLoaded', function () {
-  handleBlur();
-});
+
 
 function clearResultBody() {
   scriptText.innerHTML = "";
