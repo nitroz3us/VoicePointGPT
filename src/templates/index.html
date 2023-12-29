@@ -7,7 +7,7 @@
     <meta charset="UTF-8" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>VoicePointGPT</title>
+    <title>SlidesSpeaker</title>
     <link rel="stylesheet" href="/static/main.css" />
     <!-- Scripts -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -31,7 +31,7 @@
           <a href="/" class="flex">
             <span
               class="self-center text-xl font-bold whitespace-nowrap hover:text-violet-300 md:hover:bg-transparent md:p-0 text-black"
-              >VoicePointGPT</span
+              >SlidesSpeaker</span
             >
           </a>
 
@@ -48,7 +48,7 @@
               </li>
               <li>
                 <a
-                  href="https://github.com/nitroz3us/"
+                  href="https://github.com/TIAN-2001/slides-speaker"
                   target="_blank"
                   class="block py-2 pl-3 pr-4 text-black rounded hover:text-violet-300 md:hover:bg-transparent md:p-0"
                   >GitHub</a
@@ -68,14 +68,14 @@
         <h1
           class="title-head font-bold text-black text-4xl md:text-7xl drop-shadow-sm text-center font-display bg-gradient-to-r from-black to-stone-500 bg-clip-text text-transparent"
         >
-          Effortless narration
-          <span
+          Let your slides speak!
+          <!-- <span
             class="bg-gradient-to-r from-blue-500 to-indigo-500 bg-clip-text text-transparent text-center font-bold text-4xl md:text-7xl"
-            >with VoicePointGPT</span
-          >
+            >with SlidesSpeaker</span
+          > -->
         </h1>
         <div class="md:text-xl text-center text-gray-500 mt-6">
-          Just upload your PDF and automatically
+          Just upload your slides (pdf) and automatically
         </div>
         <div class="md:text-xl text-center text-gray-500">
           get an AI narration of your presentation
@@ -238,6 +238,38 @@
                 </div>
               </div>
               <div class="flex flex-row -mx-3 mb-2 mt-2">
+                <div class="w-full px-3 mb-6 md:mb-0">
+                  <label
+                    class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
+                    for="styleChoice"
+                  >
+                    Style
+                  </label>
+                  <div class="relative">
+                    <select
+                      class="block appearance-none w-full border border-gray-300 text-gray-700 py-3 px-4 pr-8 rounded shadow-sm leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
+                      id="styleChoice"
+                      name="styleChoice"
+                      disabled
+                    >
+                      <option>Funny</option>
+                      <option>Analytical</option>
+                    </select>
+                    <div
+                      class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700"
+                    >
+                      <svg
+                        class="fill-current h-4 w-4"
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 20 20"
+                      >
+                        <path
+                          d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"
+                        />
+                      </svg>
+                    </div>
+                  </div>
+                </div>                
                 <div class="w-full px-3 mb-6 md:mb-0">
                   <label
                     class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
