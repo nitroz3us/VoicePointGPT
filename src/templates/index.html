@@ -23,41 +23,30 @@
   </head>
   <body>
     <!-- Navigation Header -->
-    <div class="top_nav">
-      <nav class="bg-slate-100 bg-opacity-30">
-        <div
-          class="top-0 left-0 flex flex-row justify-between w-screen p-5 md:pr-10"
+    <div
+      class="fixed top-0 w-full flex justify-center bg-white/0 z-30 transition-all backdrop-filter backdrop-blur-lg bg-opacity-30 border-b border-gray-200"
+    >
+      <div
+        class="mx-5 flex h-16 max-w-screen-xl items-center justify-between w-full"
+      >
+        <a
+          class="flex items-center font-display text-black font-semibold text-2xl"
+          href="/"
+          >VoiceoverGPT</a
         >
-          <a href="/" class="flex">
-            <span
-              class="self-center text-xl font-bold whitespace-nowrap hover:text-violet-300 md:hover:bg-transparent md:p-0 text-black"
-              >VoicePointGPT</span
-            >
-          </a>
 
-          <div class="items-center justify-between md:flex">
-            <ul
-              class="flex flex-row pl-4 pr-0 py-4 md:p-0 font-bold md:flex-row md:space-x-8 md:mt-0 md:border-0 ml-auto"
-            >
-              <li>
-                <a
-                  href="/about"
-                  class="block py-2 pl-3 pr-4 hover:text-violet-300 md:hover:bg-transparent md:p-0 text-black"
-                  >About</a
-                >
-              </li>
-              <li>
-                <a
-                  href="https://github.com/nitroz3us/"
-                  target="_blank"
-                  class="block py-2 pl-3 pr-4 text-black rounded hover:text-violet-300 md:hover:bg-transparent md:p-0"
-                  >GitHub</a
-                >
-              </li>
-            </ul>
-          </div>
+        <div class="font-semibold">
+          <a
+            href="/about"
+            class="text-base text-black transition-all hover:underline mr-6 cursor-pointer"
+            >About</a
+          ><a
+            class="text-base text-black transition-all hover:underline mr-6 cursor-pointer"
+            href="https://github.com/nitroz3us/"
+            >GitHub</a
+          >
         </div>
-      </nav>
+      </div>
     </div>
 
     <!-- Main Body -->
@@ -381,6 +370,8 @@
                   Generating Script...
                 </button>
               </div>
+
+              <!-- modal form backdrop -->
               <div
                 id="modal-backdrop"
                 class="fixed inset-0 z-50 bg-gray-100 bg-opacity-50 backdrop-blur-md"
@@ -389,7 +380,7 @@
                 style="pointer-events: auto; display: none"
                 onclick="closeModal()"
               ></div>
-              <!-- form to get the openai key-->
+              <!-- modal form to get the openai key -->
               <div
                 role="dialog"
                 id="modal"
@@ -444,6 +435,8 @@
                   </div>
                 </div>
               </div>
+
+              <!-- modal form to set goal -->
             </form>
             <!-- end form here -->
           </div>
