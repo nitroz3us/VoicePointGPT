@@ -63,6 +63,7 @@ https://github.com/nitroz3us/VoicePointGPT/assets/109442833/0c9ca210-da09-4044-9
 - FastAPI
 - TailwindCSS
 - Supabase
+- Vercel
 
 ## Contributing
 Contributions are welcome! If you have any suggestions, bug reports, or feature requests, please open an issue or submit a pull request.
