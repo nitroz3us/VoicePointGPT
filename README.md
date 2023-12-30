@@ -55,11 +55,7 @@ https://github.com/nitroz3us/VoicePointGPT/assets/109442833/0c9ca210-da09-4044-9
 
 ## Limitations
 - Maximum of 32 slides.
-- Within the token limit of GPT4 Vision.
-
-## Upcoming Features
-- [ ] Different presentation styles
-- [ ] Compress files upon upload only if file is more than 4.5MB 
+- Within the token limit of GPT4 Vision. 
 
 ## Why am I doing this?
 - Wanted to try out OpenAI Vision API & Text-To-Speech
