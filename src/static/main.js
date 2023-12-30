@@ -7,6 +7,7 @@ var scriptText = document.getElementById("scriptText");
 var loadingSpinnerSave = document.getElementById("loadingSpinnerSave");
 var saveBtn = document.getElementById("saveBtn");
 var modelChoice = document.getElementById("modelChoice");
+var styleChoice = document.getElementById("styleChoice");
 var apiKeyInput = document.getElementById("apiKeyInput")
 var narrateBtn = document.getElementById("narrateBtn");
 var audioDiv = document.getElementById("audioDiv");
@@ -164,12 +165,17 @@ async function generateScript() {
 //    { type: "text", text: "Analyze the images in such a way that you are doing a presentation. The user will give you the slides in order from first to last. Each image is one slide. Title slides should only be a few words or ignored. Each individual slide should provide a narrative that is relevant to the slide, be elaborate on each slide. Do not repeat points that have already been made in the script. Use creative license to make the application more fleshed out."}
 
 async function getResultFromOpenAI(imageUrls) {
+  // get style choice
+  var style = styleChoice.value;
+
   // Build messages array based on imageUrls
   const messages = [
     {
       role: "user",
       content: [
-        { type: "text", text: "Analyze the images in such a way that you are doing a presentation. Pretend that you are presenting to an audience. The user will give you the slides in order from first to last. Most importantly, each image is 1 slide. For title slides with less than 10 words, make the script one that transitions to the new title. Each individual slide should have a narrative that is relevant to the slide. Each slide should be more than 2 sentences. Do not use big bold words. Do not write the slide numbers. Do not repeat points that have already been made in the script. Use creative license to make the presentation more fleshed out."
+        { type: "text", text: `Analyze the images in such a way that you are doing a presentation. \
+        Pretend that you are presenting to an audience. The user will give you the slides in order from first to last. Most importantly, each image is 1 slide. For title slides with less than 10 words, make the script one that transitions to the new title. Each individual slide should have a narrative that is relevant to the slide. Each slide should be more than 2 sentences. Do not use big bold words. Do not write the slide numbers. Do not repeat points that have already been made in the script.\
+        Make the presentation in the style of ${style}.`
         },
       ],
     },
@@ -183,6 +189,7 @@ async function getResultFromOpenAI(imageUrls) {
     });
   }
 
+  
   // Make the API request to Vision API
   try{
     const response = await fetch(visionAPIUrl, {
@@ -310,6 +317,7 @@ async function saveButton(){
     voiceChoice.disabled = false;
     dragDropInput.disabled = false;
     modelChoice.disabled = false;
+    styleChoice.disabled = false;    
     // scriptText.disabled = false;
     submitBtn.disabled = false;
     scriptText.contentEditable = true;
@@ -318,6 +326,7 @@ async function saveButton(){
     dragDropInput.classList.add("cursor-pointer");
     voiceChoice.classList.add("cursor-pointer");
     modelChoice.classList.add("cursor-pointer");
+    styleChoice.classList.add("cursor-pointer");
     closeModal();
   }
 }
