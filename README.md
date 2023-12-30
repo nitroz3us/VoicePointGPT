@@ -59,8 +59,7 @@ https://github.com/nitroz3us/VoicePointGPT/assets/109442833/0c9ca210-da09-4044-9
 
 ## Upcoming Features
 - [ ] Different presentation styles
-- [ ] Compress files upon upload
-  - Only if file is more than 4.5MB 
+- [ ] Compress files upon upload only if file is more than 4.5MB 
 
 ## Why am I doing this?
 - Wanted to try out OpenAI Vision API & Text-To-Speech
