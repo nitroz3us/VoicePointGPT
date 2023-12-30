@@ -57,9 +57,9 @@ async def generate(request: Request, data: str = Form(None), file_upload: Upload
         urls = retrieve_urls(pdf_filename)
         return {"result": urls}
     
-@app.get("/about", response_class=HTMLResponse)
-def about(request: Request):
-    return templates.TemplateResponse("about.html", {"request": request})
+# @app.get("/about", response_class=HTMLResponse)
+# def about(request: Request):
+#     return templates.TemplateResponse("about.html", {"request": request})
 
 
 # Endpoint to delete files in Supabase storage
