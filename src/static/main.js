@@ -19,7 +19,6 @@ const audioElement = document.querySelector('audio');
 const form = document.forms.generateForm;
 
 
-
 const apiUrl = "https://api.openai.com/v1/audio/speech";
 const visionAPIUrl = "https://api.openai.com/v1/chat/completions";
 
