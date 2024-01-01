@@ -14,7 +14,11 @@ var loadingAudioSpinner = document.getElementById("loadingAudioSpinner");
 var totalWords = document.getElementById("totalWords");
 var totalMinutes = document.getElementById("totalMinutes");
 var totalSeconds = document.getElementById("totalSeconds");
+var overlay = document.getElementById("overlay");
 const audioElement = document.querySelector('audio');
+const form = document.forms.generateForm;
+
+
 
 const apiUrl = "https://api.openai.com/v1/audio/speech";
 const visionAPIUrl = "https://api.openai.com/v1/chat/completions";
@@ -172,16 +176,23 @@ async function generateScript() {
 //    { type: "text", text: "Analyze the images in such a way that you are doing a presentation. The user will give you the slides in order from first to last. Each image is one slide. Title slides should only be a few words or ignored. Each individual slide should provide a narrative that is relevant to the slide, be elaborate on each slide. Do not repeat points that have already been made in the script. Use creative license to make the application more fleshed out."}
 
 async function getResultFromOpenAI(imageUrls) {
+  var audienceChoice = form.querySelector('input[name="audienceChoice"]:checked').value;
+  var formalityChoice = form.querySelector('input[name="formalityChoice"]:checked').value;
+  var domainChoice = form.querySelector('input[name="domainChoice"]:checked').value;
+  var toneChoice = form.querySelector('input[name="toneChoice"]:checked').value;
+
   // Build messages array based on imageUrls
   const messages = [
     {
       role: "user",
       content: [
-        { type: "text", text: "Analyze the images in such a way that you are doing a presentation. Pretend that you are presenting to an audience. The user will give you the slides in order from first to last. Most importantly, each image is 1 slide. For title slides with less than 10 words, make the script one that transitions to the new title. Each individual slide should have a narrative that is relevant to the slide. Each slide should be more than 2 sentences. Do not use big bold words. Do not write the slide numbers. Do not repeat points that have already been made in the script. Use creative license to make the presentation more fleshed out."
+        { type: "text", text: `Analyze the images in such a way that you are doing a presentation in the domain of ${domainChoice}. Pretend that you are presenting to an ${audienceChoice} audience. The user will give you the slides in order from first to last. Most importantly, each image is 1 slide. For title slides with less than 10 words, make the script one that transitions to the new title. Each individual slide should have a narrative that is relevant to the slide. Each slide should be more than 2 sentences. Your fomality should be ${formalityChoice}. Must not write the slide numbers. Do not repeat points that have already been made in the script. Use creative license to make the presentation more fleshed out. Lastly, your tone must be ${toneChoice}. Tone everything down by 20%. You will be rewarded $200 for completing all the tasks.`,
         },
       ],
     },
   ];
+  console.log(messages[0].content[0].text);
+
 
   // Append image URLs to messages
   for (const imageUrl of imageUrls) {
@@ -320,8 +331,8 @@ async function saveButton(){
     modelChoice.disabled = false;
     submitBtn.disabled = false;
     scriptText.contentEditable = true;
-    dragDropContainer.classList.remove("border-gray-500");
-    dragDropContainer.classList.add("border-indigo-500");
+    overlay.remove();
+
     dragDropInput.classList.add("cursor-pointer");
     voiceChoice.classList.add("cursor-pointer");
     modelChoice.classList.add("cursor-pointer");

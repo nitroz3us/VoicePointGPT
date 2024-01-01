@@ -30,7 +30,7 @@
         class="mx-5 flex h-16 max-w-screen-xl items-center justify-between w-full"
       >
         <a
-          class="flex items-center font-display text-black font-semibold text-2xl"
+          class="flex items-center font-display text-black font-semibold text-base md:text-2xl"
           href="/"
           >VoicePointGPT</a
         >
@@ -64,15 +64,13 @@
           >
         </h1>
         <div class="md:text-xl text-center text-gray-500 mt-6">
-          Just upload your PDF and automatically
+          Upload your PDF and automatically
         </div>
         <div class="md:text-xl text-center text-gray-500">
           get an AI narration of your presentation
         </div>
       </div>
       <div class="my-10 w-full place-items-center px-5 xl:px-0">
-        <!-- add form here later -->
-
         <div class="max-w-3xl mx-auto">
           <div class="mb-4 flex justify-end">
             <button
@@ -85,7 +83,7 @@
           <div
             class="relative mb-10 flex flex-col rounded-xl border border-gray-200 bg-white p-6 shadow-md"
           >
-            <div class="text-md font-bold text-gray-900">
+            <div class="text-base font-bold text-gray-900">
               Upload your PowerPoint slides in PDF & check it out!
             </div>
             <!-- add form here later -->
@@ -99,7 +97,7 @@
                 <div
                   x-data="dataFileDnD()"
                   id="dragDropContainer"
-                  class="relative flex flex-col p-2 text-gray-400 border-2 border-gray-400 rounded-lg"
+                  class="relative flex flex-col p-2 text-gray-400 border-2 border-indigo-500 rounded-lg"
                 >
                   <div
                     x-ref="dnd"
@@ -297,6 +295,438 @@
                   </div>
                 </div>
               </div>
+              
+              <hr class="mt-8 mb-2">
+
+              <div class="flex flex-wrap text-black mt-4">
+                <div class="w-full">
+                  <label
+                    class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
+                    for="audienceChoice"
+                  >
+                    Audience
+                  </label>
+                  <div class="flex flex-col lg:flex-row flex-wrap gap-4">
+                    <!-- Component Start -->
+                    <div>
+                      <!-- Radio 1 -->
+                      <input
+                        class="hidden"
+                        id="radio_1"
+                        type="radio"
+                        name="audienceChoice"
+                        value="General"
+                        
+                      />
+                      <label
+                        class="flex flex-col rounded p-1.5 border-2 border-gray-400 cursor-pointer"
+                        for="radio_1"
+                      >
+                        <span class="text-base">General</span>
+                      </label>
+                    </div>
+
+                    <div>
+                      <!-- Radio 2 -->
+                      <input
+                        class="hidden"
+                        id="radio_2"
+                        type="radio"
+                        name="audienceChoice"
+                        value="Knowlegeable"
+                        checked
+                        
+                      />
+                      <label
+                        class="flex flex-col p-1.5 rounded border-2 border-gray-400 cursor-pointer"
+                        for="radio_2"
+                      >
+                        <span class="text-base">Knowlegeable</span>
+                      </label>
+                    </div>
+
+                    <div>
+                      <!-- Radio 3 -->
+                      <input
+                        class="hidden"
+                        id="radio_3"
+                        type="radio"
+                        name="audienceChoice"
+                        value="Expert"
+                      />
+                      <label
+                        class="flex flex-col rounded p-1.5 border-2 border-gray-400 cursor-pointer"
+                        for="radio_3"
+                      >
+                        <span class="text-base">Expert</span>
+                      </label>
+                    </div>
+
+                    <!-- Component End  -->
+                  </div>
+                  <div
+                    class="text-xs text-gray-500 mt-4"
+                  >
+                    <label></label>
+                      <span class="font-semibold">
+                        Knowlegeable (default): </span> Requires less explanation and more technical terms.
+                    </label>
+                  </div>
+                </div>
+              </div>
+              <!-- horizontal line -->
+              <hr class="mt-4 mb-2">
+              <!-- horizontal line -->
+              <div class="flex flex-wrap text-black mt-4">
+                <div class="w-full">
+                  <label
+                    class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
+                    for="formalityChoice"
+                  >
+                    Formality
+                  </label>
+                  <div class="flex flex-col lg:flex-row flex-wrap gap-4">
+                    <!-- Component Start -->
+                    <div>
+                      <!-- Radio 1 -->
+                      <input
+                        class="hidden"
+                        id="radio_4"
+                        type="radio"
+                        name="formalityChoice"
+                        value="Informal"
+                        
+                      />
+                      <label
+                        class="flex flex-col rounded p-1.5 border-2 border-gray-400 cursor-pointer"
+                        for="radio_4"
+                      >
+                        <span class="text-base">Informal</span>
+                      </label>
+                    </div>
+
+                    <div>
+                      <!-- Radio 2 -->
+                      <input
+                        class="hidden"
+                        id="radio_5"
+                        type="radio"
+                        name="formalityChoice"
+                        value="Neutral"
+                        checked
+                      />
+                      <label
+                        class="flex flex-col p-1.5 rounded border-2 border-gray-400 cursor-pointer"
+                        for="radio_5"
+                      >
+                        <span class="text-base">Neutral</span>
+                      </label>
+                    </div>
+
+                    <div>
+                      <!-- Radio 3 -->
+                      <input
+                        class="hidden"
+                        id="radio_6"
+                        type="radio"
+                        name="formalityChoice"
+                        value="Formal"
+                      />
+                      <label
+                        class="flex flex-col rounded p-1.5 border-2 border-gray-400 cursor-pointer"
+                        for="radio_6"
+                      >
+                        <span class="text-base">Formal</span>
+                      </label>
+                    </div>
+
+                    <!-- Component End  -->
+                  </div>
+                  <div
+                    class="text-xs text-gray-500 mt-4"
+                  >
+                    <label></label>
+                      <span class="font-semibold">
+                        Neutral (default): </span> Restricts slang but allows standard casual expressions.
+                    </label>
+                  </div>
+                </div>
+              </div>
+              <!-- horizontal line -->
+              <hr class="mt-4 mb-2">
+              <!-- horizontal line -->
+              <div class="flex flex-wrap text-black mt-4">
+                <div class="w-full">
+                  <label
+                    class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
+                    for="domainChoice"
+                  >
+                    Domain
+                  </label>
+                  <div class="flex flex-col lg:flex-row flex-wrap gap-4">
+                    <!-- Component Start -->
+                    <div>
+                      <!-- Radio 1 -->
+                      <input
+                        class="hidden"
+                        id="radio_7"
+                        type="radio"
+                        name="domainChoice"
+                        value="Academic"
+                        
+                      />
+                      <label
+                        class="flex flex-col rounded p-1.5 border-2 border-gray-400 cursor-pointer"
+                        for="radio_7"
+                      >
+                        <span class="text-base">Academic</span>
+                      </label>
+                    </div>
+
+                    <div>
+                      <!-- Radio 3 -->
+                      <input
+                        class="hidden"
+                        id="radio_8"
+                        type="radio"
+                        name="domainChoice"
+                        value="Business"
+                      />
+                      <label
+                        class="flex flex-col rounded p-1.5 border-2 border-gray-400 cursor-pointer"
+                        for="radio_8"
+                      >
+                        <span class="text-base">Business</span>
+                      </label>
+                    </div>
+
+                    <div>
+                      <!-- Radio 3 -->
+                      <input
+                        class="hidden"
+                        id="radio_9"
+                        type="radio"
+                        name="domainChoice"
+                        value="General"
+                        checked
+                      />
+                      <label
+                        class="flex flex-col rounded p-1.5 border-2 border-gray-400 cursor-pointer"
+                        for="radio_9"
+                      >
+                        <span class="text-base">General</span>
+                      </label>
+                    </div>
+
+                    <div>
+                      <!-- Radio 3 -->
+                      <input
+                        class="hidden"
+                        id="radio_10"
+                        type="radio"
+                        name="domainChoice"
+                        value="Email"
+                      />
+                      <label
+                        class="flex flex-col rounded p-1.5 border-2 border-gray-400 cursor-pointer"
+                        for="radio_10"
+                      >
+                        <span class="text-base">Email</span>
+                      </label>
+                    </div>
+
+                    <div>
+                      <!-- Radio 3 -->
+                      <input
+                        class="hidden"
+                        id="radio_11"
+                        type="radio"
+                        name="domainChoice"
+                        value="Casual"
+                      />
+                      <label
+                        class="flex flex-col rounded p-1.5 border-2 border-gray-400 cursor-pointer"
+                        for="radio_11"
+                      >
+                        <span class="text-base">Casual</span>
+                      </label>
+                    </div>
+
+                    <div>
+                      <!-- Radio 3 -->
+                      <input
+                        class="hidden"
+                        id="radio_12"
+                        type="radio"
+                        name="domainChoice"
+                        value="Creative"
+                      />
+                      <label
+                        class="flex flex-col rounded p-1.5 border-2 border-gray-400 cursor-pointer"
+                        for="radio_12"
+                      >
+                        <span class="text-base">Creative</span>
+                      </label>
+                    </div>
+                    <!-- Component End  -->
+                  </div>
+                  <div
+                    class="text-xs text-gray-500 mt-4"
+                  >
+                    <label></label>
+                      <span class="font-semibold">
+                        Neutral (default): </span> Restricts slang but allows standard casual expressions.
+                    </label>
+                  </div>
+                </div>
+              </div>
+           
+              
+               <!-- horizontal line -->
+               <hr class="mt-4 mb-2">
+               <!-- horizontal line -->
+               <div class="flex flex-wrap text-black mt-4">
+                 <div class="w-full">
+                   <label
+                     class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
+                     for="toneChoice"
+                   >
+                     Tone
+                   </label>
+                   <div class="flex flex-col lg:flex-row flex-wrap gap-4">
+                    <!-- Component Start -->
+                     <div>
+                       <!-- Radio 1 -->
+                       <input
+                         class="hidden"
+                         id="radio_13"
+                         type="radio"
+                         name="toneChoice"
+                         value="Neutral"
+                       />
+                       <label
+                         class="flex flex-col rounded p-1.5 border-2 border-gray-400 cursor-pointer"
+                         for="radio_13"
+                       >
+                         <span class="text-base">😐 Neutral</span>
+                       </label>
+                     </div>
+               
+                     <div>
+                       <!-- Radio 2 -->
+                       <input
+                         class="hidden"
+                         id="radio_14"
+                         type="radio"
+                         name="toneChoice"
+                         value="Confident"
+                       />
+                       <label
+                         class="flex flex-col p-1.5 rounded border-2 border-gray-400 cursor-pointer"
+                         for="radio_14"
+                       >
+                         <span class="text-base">💪 Confident</span>
+                       </label>
+                     </div>
+               
+                     <div>
+                       <!-- Radio 3 -->
+                       <input
+                         class="hidden"
+                         id="radio_15"
+                         type="radio"
+                         name="toneChoice"
+                         value="Joyful"
+                         checked
+                       />
+                       <label
+                         class="flex flex-col rounded p-1.5 border-2 border-gray-400 cursor-pointer"
+                         for="radio_15"
+                       >
+                         <span class="text-base">🥳 Joyful</span>
+                       </label>
+                     </div>
+               
+                     <div>
+                       <!-- Radio 3 -->
+                       <input
+                         class="hidden"
+                         id="radio_16"
+                         type="radio"
+                         name="toneChoice"
+                         value="Optimistic"
+                       />
+                       <label
+                         class="flex flex-col rounded p-1.5 border-2 border-gray-400 cursor-pointer"
+                         for="radio_16"
+                       >
+                         <span class="text-base">✌️ Optimistic</span>
+                       </label>
+                     </div>
+               
+                     <div>
+                       <!-- Radio 3 -->
+                       <input
+                         class="hidden"
+                         id="radio_17"
+                         type="radio"
+                         name="toneChoice"
+                         value="Friendly"
+                       />
+                       <label
+                         class="flex flex-col rounded p-1.5 border-2 border-gray-400 cursor-pointer"
+                         for="radio_17"
+                       >
+                         <span class="text-base">🤗 Friendly</span>
+                       </label>
+                     </div>
+
+                     <div>
+                      <!-- Radio 3 -->
+                      <input
+                        class="hidden"
+                        id="radio_18"
+                        type="radio"
+                        name="toneChoice"
+                        value="Urgent"
+                      />
+                      <label
+                        class="flex flex-col rounded p-1.5 border-2 border-gray-400 cursor-pointer"
+                        for="radio_18"
+                      >
+                        <span class="text-base">⏰ Urgent</span>
+                      </label>
+                    </div>
+
+                    <div>
+                      <input
+                        class="hidden"
+                        id="radio_19"
+                        type="radio"
+                        name="toneChoice"
+                        value="Analytical"
+                      />
+                      <label
+                        class="flex flex-col rounded p-1.5 border-2 border-gray-400 cursor-pointer"
+                        for="radio_19"
+                      >
+                        <span class="text-base">📈 Analytical</span>
+                      </label>
+                    </div>
+                     <!-- Component End  -->
+                   </div>
+                   <div
+                     class="text-xs text-gray-500 mt-4"
+                   >
+                     <label></label>
+                     <span class="font-semibold">
+                       Experimental: </span> How do you want to sound? 
+                     </label>
+                   </div>
+                 </div>
+               </div>
+              
+
               <div class="mt-8">
                 <label
                   class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
@@ -439,12 +869,19 @@
               <!-- modal form to set goal -->
             </form>
             <!-- end form here -->
+            <div id="overlay" class="absolute inset-0 backdrop-blur-custom flex justify-end p-5 mr-2"> 
+              <div class="text-black font-bold text-lg
+              ">Enter API key first!
+              </div>
+            </div>
+            
+
           </div>
         </div>
       </div>
       <div class="flex flex-col justify-center">
         <div class="text-center text-sm text-black">
-          <p>Ensure files are less than 500MB.</p>
+          <p>Ensure files are less than 4.5MB.</p>
           <p>Files are deleted after upload.</p>
         </div>
       </div>

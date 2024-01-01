@@ -147,3 +147,14 @@
 .title-head {
   text-wrap: balance;
 }
+
+input:checked + label {
+	border-color: rgb(94, 163, 195);
+  border-width: 2.5px;
+  
+	box-shadow: 0 5px 5px -3px rgba(94, 163, 195, 0.3), 0 2px 2px -2px rgba(0, 0, 0, 0.05);
+}
+
+.backdrop-blur-custom {
+  backdrop-filter: blur(2px);
+}
