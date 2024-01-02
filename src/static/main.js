@@ -1,13 +1,13 @@
-var voiceChoice = document.getElementById("voiceChoice")
-var dragDropContainer = document.getElementById("dragDropContainer")
-var dragDropInput = document.getElementById("dragDropInput")
+var voiceChoice = document.getElementById("voiceChoice");
+var dragDropContainer = document.getElementById("dragDropContainer");
+var dragDropInput = document.getElementById("dragDropInput");
 var submitBtn = document.getElementById("submitBtn");
 var loadingSpinner = document.getElementById("loadingSpinner");
 var scriptText = document.getElementById("scriptText");
 var loadingSpinnerSave = document.getElementById("loadingSpinnerSave");
 var saveBtn = document.getElementById("saveBtn");
 var modelChoice = document.getElementById("modelChoice");
-var apiKeyInput = document.getElementById("apiKeyInput")
+var apiKeyInput = document.getElementById("apiKeyInput");
 var narrateBtn = document.getElementById("narrateBtn");
 var audioDiv = document.getElementById("audioDiv");
 var loadingAudioSpinner = document.getElementById("loadingAudioSpinner");
@@ -15,79 +15,77 @@ var totalWords = document.getElementById("totalWords");
 var totalMinutes = document.getElementById("totalMinutes");
 var totalSeconds = document.getElementById("totalSeconds");
 var overlay = document.getElementById("overlay");
-const audioElement = document.querySelector('audio');
+const audioElement = document.querySelector("audio");
 const form = document.forms.generateForm;
-
 
 const apiUrl = "https://api.openai.com/v1/audio/speech";
 const visionAPIUrl = "https://api.openai.com/v1/chat/completions";
 
 function dataFileDnD() {
   return {
-      files: [],
-      fileDragging: null,
-      fileDropping: null,
-      humanFileSize(size) {
-          const i = Math.floor(Math.log(size) / Math.log(1024));
-          return (
-              (size / Math.pow(1024, i)).toFixed(2) * 1 +
-              " " +
-              ["B", "kB", "MB", "GB", "TB"][i]
-          );
-      },
-      remove(index) {
-          let files = [];
-          files.splice(index, 1);
-          // reset the file input
-          this.files = createFileList(files);
-          document.getElementById("dragDropInput").files = this.files;
+    files: [],
+    fileDragging: null,
+    fileDropping: null,
+    humanFileSize(size) {
+      const i = Math.floor(Math.log(size) / Math.log(1024));
+      return (
+        (size / Math.pow(1024, i)).toFixed(2) * 1 +
+        " " +
+        ["B", "kB", "MB", "GB", "TB"][i]
+      );
+    },
+    remove(index) {
+      let files = [];
+      files.splice(index, 1);
+      // reset the file input
+      this.files = createFileList(files);
+      document.getElementById("dragDropInput").files = this.files;
+    },
+    drop(e) {
+      let removed, add;
+      let files = [...this.files];
 
-          
-      },
-      drop(e) {
-          let removed, add;
-          let files = [...this.files];
+      removed = files.splice(this.fileDragging, 1);
+      files.splice(this.fileDropping, 0, ...removed);
 
-          removed = files.splice(this.fileDragging, 1);
-          files.splice(this.fileDropping, 0, ...removed);
+      this.files = createFileList(files);
 
-          this.files = createFileList(files);
+      this.fileDropping = null;
+      this.fileDragging = null;
+    },
+    dragenter(e) {
+      let targetElem = e.target.closest("[draggable]");
 
-          this.fileDropping = null;
-          this.fileDragging = null;
-      },
-      dragenter(e) {
-          let targetElem = e.target.closest("[draggable]");
+      this.fileDropping = targetElem.getAttribute("data-index");
+    },
+    dragstart(e) {
+      this.fileDragging = e.target
+        .closest("[draggable]")
+        .getAttribute("data-index");
+      e.dataTransfer.effectAllowed = "move";
+    },
+    loadFile(file) {
+      const preview = document.querySelectorAll(".preview");
+      const blobUrl = URL.createObjectURL(file);
 
-          this.fileDropping = targetElem.getAttribute("data-index");
-      },
-      dragstart(e) {
-          this.fileDragging = e.target
-              .closest("[draggable]")
-              .getAttribute("data-index");
-          e.dataTransfer.effectAllowed = "move";
-      },
-      loadFile(file) {
-          const preview = document.querySelectorAll(".preview");
-          const blobUrl = URL.createObjectURL(file);
+      preview.forEach((elem) => {
+        elem.onload = () => {
+          URL.revokeObjectURL(elem.src); // free memory
+        };
+      });
 
-          preview.forEach(elem => {
-              elem.onload = () => {
-                  URL.revokeObjectURL(elem.src); // free memory
-              };
-          });
-
-          return blobUrl;
-      },
-      addFiles(e) {
-          const files = [...e.target.files].filter((file) => file.type === "application/pdf");
-          if (files.length > 0) {
-              this.files = createFileList([], [files[0]]);
-              this.formData = new FormData();
-              this.formData.append("file", files[0]);
-          }
-      },
-        
+      return blobUrl;
+    },
+    addFiles(e) {
+      const files = [...e.target.files].filter(
+        (file) => file.type === "application/pdf"
+      );
+      if (files.length > 0) {
+        this.files = createFileList([], [files[0]]);
+        this.formData = new FormData();
+        this.formData.append("file", files[0]);
+      }
+    },
   };
 }
 
@@ -96,17 +94,14 @@ function toggleModal() {
   var backdrop = document.getElementById("modal-backdrop");
   var body = document.body;
 
-
   if (modal.style.display === "none" || modal.style.display === "") {
     modal.style.display = "block";
     backdrop.style.display = "block";
-    body.style.overflow = 'hidden'; // Disable scrolling
-
+    body.style.overflow = "hidden"; // Disable scrolling
   } else {
     modal.style.display = "none";
     backdrop.style.display = "none";
-    body.style.overflow = ''; // Enable scrolling
-
+    body.style.overflow = ""; // Enable scrolling
   }
 }
 
@@ -135,9 +130,8 @@ async function generateScript() {
     }
 
     const responseData = await response.json();
-    
+
     if (responseData.error) {
-      
       throw new Error(responseData.error);
     }
 
@@ -158,8 +152,8 @@ async function generateScript() {
     submitBtn.classList.remove("hidden");
     narrateBtn.classList.add("hidden");
     console.error("Error: ", error.message);
-    toast('Error', error.message, toastStyles.error, 7000);
-  } finally {    
+    toast("Error", error.message, toastStyles.error, 7000);
+  } finally {
     // Delete files only if imageUrls is defined
     if (imageUrls.length > 0) {
       loadingSpinner.classList.add("hidden");
@@ -171,13 +165,18 @@ async function generateScript() {
   }
 }
 
-
 //    { type: "text", text: "Analyze the images in such a way that you are doing a presentation. The user will give you the slides in order from first to last. Each image is one slide. Title slides should only be a few words or ignored. Each individual slide should provide a narrative that is relevant to the slide, be elaborate on each slide. Do not repeat points that have already been made in the script. Use creative license to make the application more fleshed out."}
 
 async function getResultFromOpenAI(imageUrls) {
-  var audienceChoice = form.querySelector('input[name="audienceChoice"]:checked').value;
-  var formalityChoice = form.querySelector('input[name="formalityChoice"]:checked').value;
-  var domainChoice = form.querySelector('input[name="domainChoice"]:checked').value;
+  var audienceChoice = form.querySelector(
+    'input[name="audienceChoice"]:checked'
+  ).value;
+  var formalityChoice = form.querySelector(
+    'input[name="formalityChoice"]:checked'
+  ).value;
+  var domainChoice = form.querySelector(
+    'input[name="domainChoice"]:checked'
+  ).value;
   var toneChoice = form.querySelector('input[name="toneChoice"]:checked').value;
 
   // Build messages array based on imageUrls
@@ -185,13 +184,14 @@ async function getResultFromOpenAI(imageUrls) {
     {
       role: "user",
       content: [
-        { type: "text", text: `Analyze the images in such a way that you are doing a presentation in the domain of ${domainChoice}. Pretend that you are presenting to an ${audienceChoice} audience. The user will give you the slides in order from first to last. Most importantly, each image is 1 slide. For title slides with less than 10 words, make the script one that transitions to the new title. Each individual slide should have a narrative that is relevant to the slide. Each slide should be more than 2 sentences. Your fomality should be ${formalityChoice}. Must not write the slide numbers. Do not repeat points that have already been made in the script. Use creative license to make the presentation more fleshed out. Lastly, your tone must be ${toneChoice}. Tone everything down by 20%. You will be rewarded $200 for completing all the tasks.`,
+        {
+          type: "text",
+          text: `Analyze the images in such a way that you are doing a presentation in the domain of ${domainChoice}. Pretend that you are presenting to an ${audienceChoice} audience. The user will give you the slides in order from first to last. Most importantly, each image is 1 slide. For title slides with less than 10 words, make the script one that transitions to the new title. Each individual slide should have a narrative that is relevant to the slide. Each slide should be more than 2 sentences. Your fomality should be ${formalityChoice}. Must not write the slide numbers. Do not repeat points that have already been made in the script. Use creative license to make the presentation more fleshed out. Lastly, your tone must be ${toneChoice}. Tone everything down by 20%. You will be rewarded $200 for completing all the tasks.`,
         },
       ],
     },
   ];
   console.log(messages[0].content[0].text);
-
 
   // Append image URLs to messages
   for (const imageUrl of imageUrls) {
@@ -202,7 +202,7 @@ async function getResultFromOpenAI(imageUrls) {
   }
 
   // Make the API request to Vision API
-  try{
+  try {
     const response = await fetch(visionAPIUrl, {
       method: "POST",
       headers: {
@@ -216,19 +216,19 @@ async function getResultFromOpenAI(imageUrls) {
         max_tokens: 4096,
       }),
     });
-    
+
     // Check if the response is OK
     const resultData = await response.json();
     if (!response.ok) {
       narrateBtn.classList.add("hidden");
-      toast('Error:', resultData.error.message, toastStyles.error, 7000);
-    }else{
+      toast("Error:", resultData.error.message, toastStyles.error, 7000);
+    } else {
       return resultData.choices[0].message.content;
     }
     // Return the result
-  }catch(error){
-    await deleteFiles(imageUrls); 
-  } 
+  } catch (error) {
+    await deleteFiles(imageUrls);
+  }
 }
 
 // get word count and estimated time
@@ -247,7 +247,7 @@ async function generateSpeech() {
   loadingAudioSpinner.classList.remove("hidden");
   narrateBtn.classList.add("hidden");
   submitBtn.classList.add("hidden");
-  
+
   const maxChunkSize = 4096; // Maximum token limit
   // Split the input text into chunks
   const textChunks = [];
@@ -262,7 +262,7 @@ async function generateSpeech() {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "Authorization": `Bearer ${apiKeyInput.value}`,
+        Authorization: `Bearer ${apiKeyInput.value}`,
       },
       body: JSON.stringify({
         model: modelChoice.value,
@@ -275,10 +275,15 @@ async function generateSpeech() {
     narrateBtn.classList.add("hidden");
 
     if (!response.ok) {
-      audioDiv.classList.remove('hidden');
+      audioDiv.classList.remove("hidden");
       narrateBtn.classList.remove("hidden");
       loadingAudioSpinner.classList.add("hidden");
-      toast('Error', `Failed to generate audio: ${response.statusText}`, toastStyles.error, 2000);
+      toast(
+        "Error",
+        `Failed to generate audio: ${response.statusText}`,
+        toastStyles.error,
+        2000
+      );
       throw new Error(`Failed to generate audio: ${response.statusText}`);
     }
 
@@ -292,39 +297,39 @@ async function generateSpeech() {
   ).buffer;
 
   // Convert the ArrayBuffer to a Blob
-  const blob = new Blob([concatenatedAudio], { type: 'audio/mp3' });
+  const blob = new Blob([concatenatedAudio], { type: "audio/mp3" });
 
   // Create a data URL from the Blob
   const dataUrl = URL.createObjectURL(blob);
 
   // Get the existing <audio> element
-  const audioElement = document.querySelector('audio');
+  const audioElement = document.querySelector("audio");
 
   // Update the source of the <audio> element
   audioElement.src = dataUrl;
 
   // Play the audio
   audioElement.play();
-  audioDiv.classList.remove('hidden');
+  audioDiv.classList.remove("hidden");
   narrateBtn.classList.remove("hidden");
   submitBtn.classList.remove("hidden");
   loadingAudioSpinner.classList.add("hidden");
-  toast('Success', 'Audio generated', toastStyles.success, 2000);
+  toast("Success", "Audio generated", toastStyles.success, 2000);
 }
 
-async function saveButton(){
+async function saveButton() {
   var apiKey = document.getElementById("apiKeyInput").value;
   // check if api key input is empty
-  if(apiKey === ""){
-    toast('Error', 'API key is empty', toastStyles.error, 2000);
+  if (apiKey === "") {
+    toast("Error", "API key is empty", toastStyles.error, 2000);
     return;
-  }else if(!isValidApiKeyFormat(apiKey)){
-    toast('Error', 'Invalid API key format', toastStyles.error, 2000);
+  } else if (!isValidApiKeyFormat(apiKey)) {
+    toast("Error", "Invalid API key format", toastStyles.error, 2000);
     return;
-  }else if(!await validateApiKey(apiKey)){
-    toast('Error', 'Invalid API key', toastStyles.error, 2000);
+  } else if (!(await validateApiKey(apiKey))) {
+    toast("Error", "Invalid API key", toastStyles.error, 2000);
     return;
-  }else{
+  } else {
     voiceChoice.disabled = false;
     dragDropInput.disabled = false;
     modelChoice.disabled = false;
@@ -340,14 +345,13 @@ async function saveButton(){
 }
 
 function closeModal() {
-
   var modal = document.getElementById("modal");
   var backdrop = document.getElementById("modal-backdrop");
   var body = document.body;
 
   modal.style.display = "none";
   backdrop.style.display = "none";
-  body.style.overflow = ''; // Enable scrolling
+  body.style.overflow = ""; // Enable scrolling
 }
 
 // Delete files from supabase storage
@@ -356,8 +360,7 @@ async function deleteFiles(imageUrls) {
   var list_of_file_paths = [];
 
   // check if imageurls is not empty
-  if(imageUrls.length > 0){
-      
+  if (imageUrls.length > 0) {
     imageUrls.forEach((imageUrl, index) => {
       const urlObject = new URL(imageUrl);
       const parts = urlObject.pathname.split("/");
@@ -366,10 +369,9 @@ async function deleteFiles(imageUrls) {
       const filepath = `${pdfFilename}/${pageFilename}`;
       list_of_file_paths.push(filepath);
     });
-
-  }else{
+  } else {
     narrateBtn.classList.add("hidden");
-    toast('Error', 'No PDF found', toastStyles.error, 7000);
+    toast("Error", "No PDF found", toastStyles.error, 7000);
   }
   // Make the API request
   const response = await fetch("/delete-files", {
@@ -406,13 +408,15 @@ async function validateApiKey(apiKey) {
   saveBtn.classList.add("hidden");
 
   try {
-    const response = await fetch("https://api.openai.com/v1/engines", { headers });
-    if (response.ok){
-      toast('Success', 'API key is valid', toastStyles.success, 2000);
+    const response = await fetch("https://api.openai.com/v1/engines", {
+      headers,
+    });
+    if (response.ok) {
+      toast("Success", "API key is valid", toastStyles.success, 2000);
       loadingSpinnerSave.classList.add("hidden");
       saveBtn.classList.remove("hidden");
       return response.ok;
-    }else{
+    } else {
       loadingSpinnerSave.classList.add("hidden");
       saveBtn.classList.remove("hidden");
       return false;
@@ -420,7 +424,7 @@ async function validateApiKey(apiKey) {
   } catch (error) {
     return false;
   }
-} 
+}
 // Close the modal on Escape key press
 window.addEventListener("keydown", function (event) {
   if (event.key === "Escape") {
@@ -428,16 +432,14 @@ window.addEventListener("keydown", function (event) {
   }
 });
 
-
-
 function clearResultBody() {
   scriptText.innerHTML = "";
   // Pause the audio (if playing)
   audioElement.pause();
 
   // Set the audio source to an empty string
-  audioElement.src = '';
+  audioElement.src = "";
 
   // Hide the audio UI container
-  audioDiv.classList.add('hidden');
+  audioDiv.classList.add("hidden");
 }
