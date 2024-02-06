@@ -9,7 +9,7 @@
 
 ## Getting Started (Locally)
 
-To get started with GPThreatIntel-Summarizer, follow these steps:
+To get started with VoicePointGPT, follow these steps:
 
 1. Clone the repository:
 
